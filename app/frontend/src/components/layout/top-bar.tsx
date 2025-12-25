@@ -47,8 +47,8 @@ export function TopBar({
           "h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-ramp-grey-700 transition-colors",
           !isBottomCollapsed && "text-foreground"
         )}
-        aria-label="Toggle bottom panel"
-        title="Toggle Bottom Panel (⌘J)"
+        aria-label="切换工作流面板"
+        title={`切换工作流面板 (⌘J)`}
       >
         <PanelBottom size={16} />
       </Button>
@@ -62,8 +62,8 @@ export function TopBar({
           "h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-ramp-grey-700 transition-colors",
           !isRightCollapsed && "text-foreground"
         )}
-        aria-label="Toggle right sidebar"
-        title="Toggle Right Side Bar (⌘I)"
+        aria-label="切换右侧边栏"
+        title="切换右侧边栏 (⌘I)"
       >
         <PanelRight size={16} />
       </Button>
@@ -77,8 +77,8 @@ export function TopBar({
         size="sm"
         onClick={onSettingsClick}
         className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-ramp-grey-700 transition-colors"
-        aria-label="Open settings"
-        title="Open Settings (⌘,)"
+        aria-label="打开设置"
+        title={`打开设置 (⌘,)`}
       >
         <Settings size={16} />
       </Button>

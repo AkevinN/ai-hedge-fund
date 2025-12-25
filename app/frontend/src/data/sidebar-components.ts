@@ -8,7 +8,9 @@ import {
   LucideIcon,
   Network,
   Play,
-  Zap
+  Zap,
+  FileJson,
+  FileText
 } from 'lucide-react';
 import { Agent, getAgents } from './agents';
 
@@ -33,16 +35,16 @@ export const getComponentGroups = async (): Promise<ComponentGroup[]> => {
   
   return [
     {
-      name: "Start Nodes",
+      name: "开始节点",
       icon: Play,
       iconColor: "text-blue-500",
       items: [
-        { name: "Portfolio Input", icon: ChartPie },
-        { name: "Stock Input", icon: ChartLine },
+        { name: "投资组合输入", icon: ChartPie },
+        { name: "股票输入", icon: ChartLine },
       ]
     },
     {
-      name: "Analysts",
+      name: "分析师",
       icon: Bot,
       iconColor: "text-red-500",
       items: agents.map((agent: Agent) => ({
@@ -51,23 +53,23 @@ export const getComponentGroups = async (): Promise<ComponentGroup[]> => {
       }))
     },
     {
-      name: "Swarms",
+      name: "集群",
       icon: Network,
       iconColor: "text-yellow-500",
       items: [
-        { name: "Data Wizards", icon: Calculator },
-        { name: "Market Mavericks", icon: Zap },
-        { name: "Value Investors", icon: BadgeDollarSign },
+        { name: "数据巫师", icon: Calculator },
+        { name: "市场先锋", icon: Zap },
+        { name: "价值投资者", icon: BadgeDollarSign },
       ]
     },
     {
-      name: "End Nodes",
+      name: "结束节点",
       icon: Brain,
       iconColor: "text-green-500",
       items: [
-        { name: "Portfolio Manager", icon: Brain },
-        // { name: "JSON Output", icon: FileJson },
-        // { name: "Investment Report", icon: FileText },
+        { name: "投资组合管理器", icon: Brain },
+        { name: "JSON 输出", icon: FileJson },
+        { name: "投资报告", icon: FileText },
       ]
     },
   ];

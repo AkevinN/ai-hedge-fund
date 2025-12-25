@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\kevin\AppData\Roaming\pypoetry\venv\Lib\site-packages\pip\__main__.py", line 22, in <module>
+    from pip._internal.cli.main import main as _main
+ModuleNotFoundError: No module named 'pip._internal.cli'
+
+Traceback:
+
+  File "<stdin>", line 937, in main
+  File "<stdin>", line 574, in run
+  File "<stdin>", line 596, in install
+  File "<stdin>", line 699, in install_poetry
+  File "<stdin>", line 389, in pip
+  File "<stdin>", line 386, in python
+  File "<stdin>", line 379, in run

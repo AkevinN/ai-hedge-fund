@@ -16,8 +16,8 @@ interface ApiKey {
 const FINANCIAL_API_KEYS: ApiKey[] = [
   {
     key: 'FINANCIAL_DATASETS_API_KEY',
-    label: 'Financial Datasets API',
-    description: 'For getting financial data to power the hedge fund',
+    label: '金融数据集 API',
+    description: '用于获取金融数据以支持对冲基金运作',
     url: 'https://financialdatasets.ai/',
     placeholder: 'your-financial-datasets-api-key'
   }
@@ -27,49 +27,49 @@ const LLM_API_KEYS: ApiKey[] = [
   {
     key: 'ANTHROPIC_API_KEY',
     label: 'Anthropic API',
-    description: 'For Claude models (claude-4-sonnet, claude-4.1-opus, etc.)',
+    description: '用于 Claude 模型 (claude-4-sonnet, claude-4.1-opus 等)',
     url: 'https://anthropic.com/',
     placeholder: 'your-anthropic-api-key'
   },
   {
     key: 'DEEPSEEK_API_KEY',
     label: 'DeepSeek API',
-    description: 'For DeepSeek models (deepseek-chat, deepseek-reasoner, etc.)',
+    description: '用于 DeepSeek 模型 (deepseek-chat, deepseek-reasoner 等)',
     url: 'https://deepseek.com/',
     placeholder: 'your-deepseek-api-key'
   },
   {
     key: 'GROQ_API_KEY',
     label: 'Groq API',
-    description: 'For Groq-hosted models (deepseek, llama3, etc.)',
+    description: '用于 Groq 托管模型 (deepseek, llama3 等)',
     url: 'https://groq.com/',
     placeholder: 'your-groq-api-key'
   },
   {
     key: 'GOOGLE_API_KEY',
     label: 'Google API',
-    description: 'For Gemini models (gemini-2.5-flash, gemini-2.5-pro)',
+    description: '用于 Gemini 模型 (gemini-2.5-flash, gemini-2.5-pro)',
     url: 'https://ai.dev/',
     placeholder: 'your-google-api-key'
   },
   {
     key: 'OPENAI_API_KEY',
     label: 'OpenAI API',
-    description: 'For OpenAI models (gpt-4o, gpt-4o-mini, etc.)',
+    description: '用于 OpenAI 模型 (gpt-4o, gpt-4o-mini 等)',
     url: 'https://platform.openai.com/',
     placeholder: 'your-openai-api-key'
   },
   {
     key: 'OPENROUTER_API_KEY',
     label: 'OpenRouter API',
-    description: 'For OpenRouter models (gpt-4o, gpt-4o-mini, etc.)',
+    description: '用于 OpenRouter 模型 (gpt-4o, gpt-4o-mini 等)',
     url: 'https://openrouter.ai/',
     placeholder: 'your-openrouter-api-key'
   },
   {
     key: 'GIGACHAT_API_KEY',
     label: 'GigaChat API',
-    description: 'For GigaChat models (GigaChat-2-Max, etc.)',
+    description: '用于 GigaChat 模型 (GigaChat-2-Max 等)',
     url: 'https://github.com/ai-forever/gigachat',
     placeholder: 'your-gigachat-api-key'
   }
@@ -224,15 +224,15 @@ export function ApiKeysSettings() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold text-primary mb-2">API Keys</h2>
+          <h2 className="text-xl font-semibold text-primary mb-2">API 密钥</h2>
           <p className="text-sm text-muted-foreground">
-            Loading API keys...
+            正在加载 API 密钥...
           </p>
         </div>
         <Card className="bg-panel border-gray-700 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="text-sm text-muted-foreground">
-              Please wait while we load your API keys...
+              请稍候，正在加载您的 API 密钥...
             </div>
           </CardContent>
         </Card>
@@ -243,10 +243,10 @@ export function ApiKeysSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-primary mb-2">API Keys</h2>
+        <h2 className="text-xl font-semibold text-primary mb-2">API 密钥</h2>
         <p className="text-sm text-muted-foreground">
-          Configure API endpoints and authentication credentials for financial data and language models.
-          Changes are automatically saved.
+          配置金融数据和语言模型的 API 端点和身份验证凭据。
+          更改会自动保存。
         </p>
       </div>
 
@@ -257,7 +257,7 @@ export function ApiKeysSettings() {
             <div className="flex items-start gap-3">
               <Key className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
               <div className="space-y-1">
-                <h4 className="text-sm font-medium text-red-500">Error</h4>
+                <h4 className="text-sm font-medium text-red-500">错误</h4>
                 <p className="text-xs text-muted-foreground">{error}</p>
                 <Button
                   variant="ghost"
@@ -268,7 +268,7 @@ export function ApiKeysSettings() {
                   }}
                   className="text-xs mt-2 p-0 h-auto text-red-500 hover:text-red-400"
                 >
-                  Try again
+                  重试
                 </Button>
               </div>
             </div>
@@ -278,16 +278,16 @@ export function ApiKeysSettings() {
 
       {/* Financial Data API Keys */}
       {renderApiKeySection(
-        'Financial Data',
-        'API keys for accessing financial market data and datasets.',
+        '金融数据',
+        '用于访问金融市场数据和数据集的 API 密钥',
         FINANCIAL_API_KEYS,
         <Key className="h-4 w-4" />
       )}
 
       {/* LLM API Keys */}
       {renderApiKeySection(
-        'Language Models',
-        'API keys for accessing various large language model providers.',
+        '语言模型',
+        '用于访问各种大语言模型提供商的 API 密钥',
         LLM_API_KEYS,
         <Key className="h-4 w-4" />
       )}
@@ -298,10 +298,10 @@ export function ApiKeysSettings() {
           <div className="flex items-start gap-3">
             <Key className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
             <div className="space-y-1">
-              <h4 className="text-sm font-medium text-amber-500">Security Note</h4>
+              <h4 className="text-sm font-medium text-amber-500">安全提示</h4>
               <p className="text-xs text-muted-foreground">
-                API keys are stored securely on your local system and changes are automatically saved. 
-                Keep your API keys secure and don't share them with others.
+                API 密钥安全存储在您的本地系统中，更改会自动保存。
+                请妥善保管您的 API 密钥，不要与他人分享。
               </p>
             </div>
           </div>

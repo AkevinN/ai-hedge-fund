@@ -13,7 +13,7 @@ function ProgressSection({ sortedAgents }: { sortedAgents: [string, any][] }) {
   return (
     <Card className="bg-transparent mb-4">
       <CardHeader>
-        <CardTitle className="text-lg">Progress</CardTitle>
+        <CardTitle className="text-lg">进度</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
@@ -52,16 +52,16 @@ function SummarySection({ outputData }: { outputData: any }) {
   return (
     <Card className="bg-transparent mb-4">
       <CardHeader>
-        <CardTitle className="text-lg">Summary</CardTitle>
+        <CardTitle className="text-lg">摘要</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Ticker</TableHead>
-              <TableHead>Action</TableHead>
-              <TableHead>Quantity</TableHead>
-              <TableHead>Confidence</TableHead>
+              <TableHead>股票</TableHead>
+              <TableHead>操作</TableHead>
+              <TableHead>数量</TableHead>
+              <TableHead>置信度</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -106,7 +106,7 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
   return (
     <Card className="bg-transparent">
       <CardHeader>
-        <CardTitle className="text-lg">Analysis</CardTitle>
+        <CardTitle className="text-lg">分析</CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs value={selectedTicker} onValueChange={setSelectedTicker} className="w-full">
@@ -131,22 +131,22 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Agent</TableHead>
-                      <TableHead>Signal</TableHead>
-                      <TableHead>Confidence</TableHead>
-                      <TableHead>Reasoning</TableHead>
+                      <TableHead>代理</TableHead>
+                      <TableHead>信号</TableHead>
+                      <TableHead>置信度</TableHead>
+                      <TableHead>推理</TableHead>
                     </TableRow>
                   </TableHeader>
-                                     <TableBody>
-                     {Object.entries(outputData.analyst_signals || {})
-                       .filter(([agent, signals]: [string, any]) => 
-                         ticker in signals && !agent.includes("risk_management")
-                       )
-                       .sort(([agentA], [agentB]) => agentA.localeCompare(agentB))
-                       .map(([agent, signals]: [string, any]) => {
-                         const signal = signals[ticker];
-                         const signalType = signal.signal?.toUpperCase() || 'UNKNOWN';
-                         const signalColor = getSignalColor(signalType);
+                  <TableBody>
+                    {Object.entries(outputData.analyst_signals || {})
+                      .filter(([agent, signals]: [string, any]) => 
+                        ticker in signals && !agent.includes("risk_management")
+                      )
+                      .sort(([agentA], [agentB]) => agentA.localeCompare(agentB))
+                      .map(([agent, signals]: [string, any]) => {
+                        const signal = signals[ticker];
+                        const signalType = signal.signal?.toUpperCase() || 'UNKNOWN';
+                        const signalColor = getSignalColor(signalType);
                         
                         return (
                           <TableRow key={agent}>
@@ -172,13 +172,13 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Value</TableHead>
+                      <TableHead>属性</TableHead>
+                      <TableHead>值</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell className="font-medium">Action</TableCell>
+                      <TableCell className="font-medium">操作</TableCell>
                       <TableCell>
                         <span className={cn("font-medium", getActionColor(decision.action || ''))}>
                           {decision.action?.toUpperCase() || 'UNKNOWN'}
@@ -186,16 +186,16 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">Quantity</TableCell>
+                      <TableCell className="font-medium">数量</TableCell>
                       <TableCell>{decision.quantity || 0}</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">Confidence</TableCell>
+                      <TableCell className="font-medium">置信度</TableCell>
                       <TableCell>{decision.confidence?.toFixed(1) || 0}%</TableCell>
                     </TableRow>
                     {decision.reasoning && (
                       <TableRow>
-                        <TableCell className="font-medium">Reasoning</TableCell>
+                        <TableCell className="font-medium">推理</TableCell>
                         <TableCell className="max-w-md">
                           <ReasoningContent content={decision.reasoning} />
                         </TableCell>

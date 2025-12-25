@@ -5,7 +5,7 @@ interface ComponentActionsProps {
 export function ComponentActions({ }: ComponentActionsProps) {
   return (
     <div className="p-2 flex justify-between flex-shrink-0 items-center border-b mt-4">
-      <span className="text-primary text-sm font-medium ml-4">Components</span>
+      <span className="text-primary text-sm font-medium ml-4">组件</span>
       {/* <div className="flex items-center gap-1">
         <Button
           variant="ghost"

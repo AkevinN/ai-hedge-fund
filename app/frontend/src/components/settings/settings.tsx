@@ -22,21 +22,21 @@ export function Settings({ className }: SettingsProps) {
   const navigationItems: SettingsNavItem[] = [
     {
       id: 'api',
-      label: 'API Keys',
+      label: 'API 密钥',
       icon: Key,
-      description: 'API endpoints and authentication',
+      description: 'API 端点和身份验证',
     },
     {
       id: 'models',
-      label: 'Models',
+      label: '模型',
       icon: CubeIcon,
-      description: 'Local and cloud AI models',
+      description: '本地和云端 AI 模型',
     },
     {
       id: 'theme',
-      label: 'Theme',
+      label: '主题',
       icon: Palette,
-      description: 'Theme and display preferences',
+      description: '主题和显示偏好',
     },
   ];
 
@@ -59,7 +59,7 @@ export function Settings({ className }: SettingsProps) {
         {/* Left Navigation Pane */}
         <div className="w-60 bg-panel flex-shrink-0">
           <div className="p-4 border-b">
-            <h1 className="text-lg font-semibold text-primary">Settings</h1>
+            <h1 className="text-lg font-semibold text-primary">设置</h1>
           </div>
           <nav className="p-2">
             {navigationItems.map((item) => {

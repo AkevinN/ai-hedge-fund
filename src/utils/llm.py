@@ -71,10 +71,10 @@ def call_llm(
 
         except Exception as e:
             if agent_name:
-                progress.update_status(agent_name, None, f"Error - retry {attempt + 1}/{max_retries}")
+                progress.update_status(agent_name, None, f"错误 - 重试 {attempt + 1}/{max_retries}")
 
             if attempt == max_retries - 1:
-                print(f"Error in LLM call after {max_retries} attempts: {e}")
+                print(f"LLM 调用在 {max_retries} 次尝试后失败: {e}")
                 # Use default_factory if provided, otherwise create a basic default
                 if default_factory:
                     return default_factory()
@@ -89,7 +89,7 @@ def create_default_response(model_class: type[BaseModel]) -> BaseModel:
     default_values = {}
     for field_name, field in model_class.model_fields.items():
         if field.annotation == str:
-            default_values[field_name] = "Error in analysis, using default"
+            default_values[field_name] = "分析出错，使用默认值"
         elif field.annotation == float:
             default_values[field_name] = 0.0
         elif field.annotation == int:
@@ -117,7 +117,7 @@ def extract_json_from_response(content: str) -> dict | None:
                 json_text = json_text[:json_end].strip()
                 return json.loads(json_text)
     except Exception as e:
-        print(f"Error extracting JSON from response: {e}")
+        print(f"从响应中提取 JSON 时出错: {e}")
     return None
 
 

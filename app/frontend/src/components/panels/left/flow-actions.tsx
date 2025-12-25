@@ -14,7 +14,7 @@ export function FlowActions({ onSave, onCreate }: FlowActionsProps) {
   return (
     <div className="p-2 flex justify-between flex-shrink-0 items-center border-b mt-4">
       <span className="text-primary text-sm font-medium ml-4">
-        Flows
+        工作流
         {isUnsaved && <span className="text-yellow-500 ml-1">*</span>}
       </span>
       <div className="flex items-center gap-1">
@@ -26,7 +26,7 @@ export function FlowActions({ onSave, onCreate }: FlowActionsProps) {
             "h-6 w-6 text-primary hover-bg",
             isUnsaved && "text-yellow-500"
           )}
-          title={`Save "${currentFlowName}"`}
+          title={`保存 "${currentFlowName}"`}
         >
           <Save size={14} />
         </Button>
@@ -35,7 +35,7 @@ export function FlowActions({ onSave, onCreate }: FlowActionsProps) {
           size="icon"
           onClick={onCreate}
           className="h-6 w-6 text-primary hover-bg"
-          title="Create new flow"
+          title="创建新工作流"
         >
           <Plus size={14} />
         </Button>

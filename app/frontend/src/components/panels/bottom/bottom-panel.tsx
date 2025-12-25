@@ -69,7 +69,7 @@ export function BottomPanel({
                 className="flex items-center gap-2 px-3 py-1.5 text-sm data-[state=active]:active-item text-muted-foreground"
               >
                 <FileText size={14} />
-                Output
+                输出
               </TabsTrigger>
             </TabsList>
             

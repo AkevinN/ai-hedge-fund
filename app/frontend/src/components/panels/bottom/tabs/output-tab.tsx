@@ -49,7 +49,7 @@ export function OutputTab({ className }: OutputTabProps) {
       {/* Empty State */}
       {!outputData && sortedAgents.length === 0 && !isBacktestRun && (
         <div className="text-center py-8 text-muted-foreground">
-          No output to display. Run an analysis to see progress and results.
+          没有可显示的输出。运行分析以查看进度和结果。
         </div>
       )}
     </div>

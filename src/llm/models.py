@@ -140,8 +140,8 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
         api_key = (api_keys or {}).get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
         if not api_key:
             # Print error to console
-            print(f"API Key Error: Please make sure GROQ_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("Groq API key not found.  Please make sure GROQ_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 GROQ_API_KEY 或通过 API 密钥提供")
+            raise ValueError("Groq API 密钥未找到，请确保在 .env 文件中设置了 GROQ_API_KEY 或通过 API 密钥提供")
         return ChatGroq(model=model_name, api_key=api_key)
     elif model_provider == ModelProvider.OPENAI:
         # Get and validate API key
@@ -149,26 +149,26 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
         base_url = os.getenv("OPENAI_API_BASE")
         if not api_key:
             # Print error to console
-            print(f"API Key Error: Please make sure OPENAI_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("OpenAI API key not found.  Please make sure OPENAI_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 OPENAI_API_KEY 或通过 API 密钥提供")
+            raise ValueError("OpenAI API 密钥未找到，请确保在 .env 文件中设置了 OPENAI_API_KEY 或通过 API 密钥提供")
         return ChatOpenAI(model=model_name, api_key=api_key, base_url=base_url)
     elif model_provider == ModelProvider.ANTHROPIC:
         api_key = (api_keys or {}).get("ANTHROPIC_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            print(f"API Key Error: Please make sure ANTHROPIC_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("Anthropic API key not found.  Please make sure ANTHROPIC_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 ANTHROPIC_API_KEY 或通过 API 密钥提供")
+            raise ValueError("Anthropic API 密钥未找到，请确保在 .env 文件中设置了 ANTHROPIC_API_KEY 或通过 API 密钥提供")
         return ChatAnthropic(model=model_name, api_key=api_key)
     elif model_provider == ModelProvider.DEEPSEEK:
         api_key = (api_keys or {}).get("DEEPSEEK_API_KEY") or os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
-            print(f"API Key Error: Please make sure DEEPSEEK_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("DeepSeek API key not found.  Please make sure DEEPSEEK_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 DEEPSEEK_API_KEY 或通过 API 密钥提供")
+            raise ValueError("DeepSeek API 密钥未找到，请确保在 .env 文件中设置了 DEEPSEEK_API_KEY 或通过 API 密钥提供")
         return ChatDeepSeek(model=model_name, api_key=api_key)
     elif model_provider == ModelProvider.GOOGLE:
         api_key = (api_keys or {}).get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            print(f"API Key Error: Please make sure GOOGLE_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("Google API key not found.  Please make sure GOOGLE_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 GOOGLE_API_KEY 或通过 API 密钥提供")
+            raise ValueError("Google API 密钥未找到，请确保在 .env 文件中设置了 GOOGLE_API_KEY 或通过 API 密钥提供")
         return ChatGoogleGenerativeAI(model=model_name, api_key=api_key)
     elif model_provider == ModelProvider.OLLAMA:
         # For Ollama, we use a base URL instead of an API key
@@ -182,8 +182,8 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
     elif model_provider == ModelProvider.OPENROUTER:
         api_key = (api_keys or {}).get("OPENROUTER_API_KEY") or os.getenv("OPENROUTER_API_KEY")
         if not api_key:
-            print(f"API Key Error: Please make sure OPENROUTER_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("OpenRouter API key not found. Please make sure OPENROUTER_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 OPENROUTER_API_KEY 或通过 API 密钥提供")
+            raise ValueError("OpenRouter API 密钥未找到，请确保在 .env 文件中设置了 OPENROUTER_API_KEY 或通过 API 密钥提供")
         
         # Get optional site URL and name for headers
         site_url = os.getenv("YOUR_SITE_URL", "https://github.com/virattt/ai-hedge-fund")
@@ -203,8 +203,8 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
     elif model_provider == ModelProvider.XAI:
         api_key = (api_keys or {}).get("XAI_API_KEY") or os.getenv("XAI_API_KEY")
         if not api_key:
-            print(f"API Key Error: Please make sure XAI_API_KEY is set in your .env file or provided via API keys.")
-            raise ValueError("xAI API key not found. Please make sure XAI_API_KEY is set in your .env file or provided via API keys.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 XAI_API_KEY 或通过 API 密钥提供")
+            raise ValueError("xAI API 密钥未找到，请确保在 .env 文件中设置了 XAI_API_KEY 或通过 API 密钥提供")
         return ChatXAI(model=model_name, api_key=api_key)
     elif model_provider == ModelProvider.GIGACHAT:
         if os.getenv("GIGACHAT_USER") or os.getenv("GIGACHAT_PASSWORD"):
@@ -212,8 +212,8 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
         else: 
             api_key = (api_keys or {}).get("GIGACHAT_API_KEY") or os.getenv("GIGACHAT_API_KEY") or os.getenv("GIGACHAT_CREDENTIALS")
             if not api_key:
-                print("API Key Error: Please make sure api_keys is set in your .env file or provided via API keys.")
-                raise ValueError("GigaChat API key not found. Please make sure GIGACHAT_API_KEY is set in your .env file or provided via API keys.")
+                print("API 密钥错误: 请确保在 .env 文件中设置了 GIGACHAT_API_KEY 或通过 API 密钥提供")
+                raise ValueError("GigaChat API 密钥未找到，请确保在 .env 文件中设置了 GIGACHAT_API_KEY 或通过 API 密钥提供")
 
             return GigaChat(credentials=api_key, model=model_name)
     elif model_provider == ModelProvider.AZURE_OPENAI:
@@ -221,18 +221,18 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
         api_key = os.getenv("AZURE_OPENAI_API_KEY")
         if not api_key:
             # Print error to console
-            print(f"API Key Error: Please make sure AZURE_OPENAI_API_KEY is set in your .env file.")
-            raise ValueError("Azure OpenAI API key not found.  Please make sure AZURE_OPENAI_API_KEY is set in your .env file.")
+            print(f"API 密钥错误: 请确保在 .env 文件中设置了 AZURE_OPENAI_API_KEY")
+            raise ValueError("Azure OpenAI API 密钥未找到，请确保在 .env 文件中设置了 AZURE_OPENAI_API_KEY")
         # Get and validate Azure Endpoint
         azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
         if not azure_endpoint:
             # Print error to console
-            print(f"Azure Endpoint Error: Please make sure AZURE_OPENAI_ENDPOINT is set in your .env file.")
-            raise ValueError("Azure OpenAI endpoint not found.  Please make sure AZURE_OPENAI_ENDPOINT is set in your .env file.")
+            print(f"Azure 端点错误: 请确保在 .env 文件中设置了 AZURE_OPENAI_ENDPOINT")
+            raise ValueError("Azure OpenAI 端点未找到，请确保在 .env 文件中设置了 AZURE_OPENAI_ENDPOINT")
         # get and validate deployment name
         azure_deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
         if not azure_deployment_name:
             # Print error to console
-            print(f"Azure Deployment Name Error: Please make sure AZURE_OPENAI_DEPLOYMENT_NAME is set in your .env file.")
-            raise ValueError("Azure OpenAI deployment name not found.  Please make sure AZURE_OPENAI_DEPLOYMENT_NAME is set in your .env file.")
+            print(f"Azure 部署名称错误: 请确保在 .env 文件中设置了 AZURE_OPENAI_DEPLOYMENT_NAME")
+            raise ValueError("Azure OpenAI 部署名称未找到，请确保在 .env 文件中设置了 AZURE_OPENAI_DEPLOYMENT_NAME")
         return AzureChatOpenAI(azure_endpoint=azure_endpoint, azure_deployment=azure_deployment_name, api_key=api_key, api_version="2024-10-21")
