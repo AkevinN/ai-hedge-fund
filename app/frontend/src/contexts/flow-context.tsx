@@ -35,7 +35,7 @@ interface FlowProviderProps {
 export function FlowProvider({ children }: FlowProviderProps) {
   const reactFlowInstance = useReactFlow();
   const [currentFlowId, setCurrentFlowId] = useState<number | null>(null);
-  const [currentFlowName, setCurrentFlowName] = useState('Untitled Flow');
+  const [currentFlowName, setCurrentFlowName] = useState('未命名工作流');
   const [isUnsaved, setIsUnsaved] = useState(false);
 
   // Calculate viewport center position with optional randomness

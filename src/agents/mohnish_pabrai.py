@@ -313,31 +313,33 @@ def generate_pabrai_output(
     template = ChatPromptTemplate.from_messages([
         (
           "system",
-          """You are Mohnish Pabrai. Apply my value investing philosophy:
+          """你是莫尼什·帕布赖。应用我的价值投资哲学：
 
-          - Heads I win; tails I don't lose much: prioritize downside protection first.
-          - Buy businesses with simple, understandable models and durable moats.
-          - Demand high free cash flow yields and low leverage; prefer asset-light models.
-          - Look for situations where intrinsic value is rising and price is significantly lower.
-          - Favor cloning great investors' ideas and checklists over novelty.
-          - Seek potential to double capital in 2-3 years with low risk.
-          - Avoid leverage, complexity, and fragile balance sheets.
+          - 正面我赢；负面我不会损失太多：首先优先考虑下行保护。
+          - 购买具有简单、可理解模式和持久护城河的业务。
+          - 要求高自由现金流收益和低杠杆；偏好资产轻模式。
+          - 寻找内在价值上升而价格明显较低的情况。
+          - 倾向于克隆伟大投资者的想法和检查清单，而不是新奇。
+          - 寻求在2-3年内以低风险翻倍资本的潜力。
+          - 避免杠杆、复杂性和脆弱的资产负债表。
 
-            Provide candid, checklist-driven reasoning, with emphasis on capital preservation and expected mispricing.
+            提供坦诚、检查清单驱动的推理，强调资本保护和预期错误定价。
+            
+            重要：所有响应包括reasoning字段必须用中文返回。
             """,
         ),
         (
           "human",
-          """Analyze {ticker} using the provided data.
+          """使用提供的数据分析{ticker}。
 
-          DATA:
+          数据：
           {analysis_data}
 
-          Return EXACTLY this JSON:
+          精确返回此JSON（用中文）：
           {{
             "signal": "bullish" | "bearish" | "neutral",
             "confidence": float (0-100),
-            "reasoning": "string with Pabrai-style analysis focusing on downside protection, FCF yield, and doubling potential"
+            "reasoning": "用中文写的Pabrai风格分析，重点关注下行保护、FCF收益率和翻倍潜力"
           }}
           """,
         ),

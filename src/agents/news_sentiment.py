@@ -74,13 +74,12 @@ def news_sentiment_agent(state: AgentState, agent_id: str = "news_sentiment_agen
                 # Note: this is an opportunity for improvement!
                 progress.update_status(agent_id, ticker, f"Analyzing sentiment for article {idx + 1} of {len(articles_to_analyze)}")
                 prompt = (
-                    f"Please analyze the sentiment of the following news headline "
-                    f"with the following context: "
-                    f"The stock is {ticker}. "
-                    f"Determine if sentiment is 'positive', 'negative', or 'neutral' for the stock {ticker} only. "
-                    f"Also provide a confidence score for your prediction from 0 to 100. "
-                    f"Respond in JSON format.\n\n"
-                    f"Headline: {news.title}"
+                    f"请分析以下新闻标题的情绪，背景如下：\n"
+                    f"股票是{ticker}。\n"
+                    f"仅针对股票{ticker}确定情绪是'正面'、'负面'还是'中立'。\n"
+                    f"还请提供你的预测的信心分数，范围从0到100。\n"
+                    f"以JSON格式用中文响应。\n\n"
+                    f"标题：{news.title}"
                 )
                 response = call_llm(prompt, Sentiment, agent_name=agent_id, state=state)
                 if response:

@@ -260,13 +260,13 @@ export function useFlowManagement(): UseFlowManagementReturn {
         localStorage.setItem('lastSelectedFlowId', savedFlow.id.toString());
         // 刷新 flows 列表
         await loadFlows();
-        success(`"${savedFlow.name}" saved!`, 'flow-save');
+        success(`"${savedFlow.name}" 已保存！`, 'flow-save');
       } else {
-        error('Failed to save flow', 'flow-save-error');
+        error('保存工作流失败', 'flow-save-error');
       }
     } catch (err) {
       console.error('Failed to save flow:', err);
-      error('Failed to save flow', 'flow-save-error');
+      error('保存工作流失败', 'flow-save-error');
     }
   }, [saveCurrentFlowWithStates, loadFlows, success, error]);
 

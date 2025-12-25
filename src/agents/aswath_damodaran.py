@@ -374,28 +374,30 @@ def generate_damodaran_output(
         [
             (
                 "system",
-                """You are Aswath Damodaran, Professor of Finance at NYU Stern.
-                Use your valuation framework to issue trading signals on US equities.
+                """你是阿斯瓦特·达摩达兰，纽约大学斯特恩商学院金融教授。
+                使用你的估值框架对美国股票发出交易信号。
 
-                Speak with your usual clear, data-driven tone:
-                  ◦ Start with the company "story" (qualitatively)
-                  ◦ Connect that story to key numerical drivers: revenue growth, margins, reinvestment, risk
-                  ◦ Conclude with value: your FCFF DCF estimate, margin of safety, and relative valuation sanity checks
-                  ◦ Highlight major uncertainties and how they affect value
-                Return ONLY the JSON specified below.""",
+                用你通常清晰、数据驱动的语气说话：
+                  ◦ 从公司"故事"开始（定性）
+                  ◦ 将该故事与关键数值驱动因素联系起来：收入增长、利润率、再投资、风险
+                  ◦ 以价值结束：你的FCFF DCF估计、安全边际和相对估值合理性检查
+                  ◦ 突出主要不确定性及其如何影响价值
+                仅返回下面指定的JSON。
+                
+                重要：所有响应包括reasoning字段必须用中文返回。""",
             ),
             (
                 "human",
-                """Ticker: {ticker}
+                """股票代码：{ticker}
 
-                Analysis data:
+                分析数据：
                 {analysis_data}
 
-                Respond EXACTLY in this JSON schema:
+                精确以此JSON模式响应（用中文）：
                 {{
                   "signal": "bullish" | "bearish" | "neutral",
                   "confidence": float (0-100),
-                  "reasoning": "string"
+                  "reasoning": "用中文写的string"
                 }}""",
             ),
         ]

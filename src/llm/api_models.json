@@ -71,7 +71,7 @@
   },
   {
     "display_name": "OpenRouter Deployment",
-    "model_name": "tngtech/deepseek-r1t-chimera:free",
+    "model_name": "nvidia/nemotron-3-nano-30b-a3b:free",
     "provider": "OpenRouter"
   }
 ]

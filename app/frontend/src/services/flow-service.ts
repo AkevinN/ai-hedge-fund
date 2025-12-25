@@ -95,11 +95,11 @@ export const flowService = {
     return response.json();
   },
 
-  // Create a default flow for new users
+  // 为新用户创建默认工作流
   async createDefaultFlow(nodes: any, edges: any, viewport?: any): Promise<Flow> {
     return this.createFlow({
-      name: 'My First Flow',
-      description: 'Welcome to AI Hedge Fund! Start building your flow here.',
+      name: '我的第一个工作流',
+      description: '欢迎使用 AI 对冲基金！开始在这里构建您的工作流。',
       nodes,
       edges,
       viewport,

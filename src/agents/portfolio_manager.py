@@ -208,24 +208,25 @@ def generate_trading_decision(
     compact_signals = _compact_signals({t: signals_by_ticker.get(t, {}) for t in tickers_for_llm})
     compact_allowed = {t: allowed_actions_full[t] for t in tickers_for_llm}
 
-    # Minimal prompt template
+    # 最小化的提示模板
     template = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                "You are a portfolio manager.\n"
-                "Inputs per ticker: analyst signals and allowed actions with max qty (already validated).\n"
-                "Pick one allowed action per ticker and a quantity ≤ the max. "
-                "Keep reasoning very concise (max 100 chars). No cash or margin math. Return JSON only."
+                "你是一个投资组合经理。\n"
+                "每个股票的输入：分析师信号和允许的操作及最大数量（已验证）。\n"
+                "为每个股票选择一个允许的操作和数量≤最大值。"
+                "保持推理非常简洁（最多100个字符）。不涉及现金或保证金计算。仅返回JSON。\n"
+                "重要：所有响应包括reasoning字段必须用中文返回。"
             ),
             (
                 "human",
-                "Signals:\n{signals}\n\n"
-                "Allowed:\n{allowed}\n\n"
-                "Format:\n"
+                "信号：\n{signals}\n\n"
+                "允许的操作：\n{allowed}\n\n"
+                "格式（用中文）：\n"
                 "{{\n"
                 '  "decisions": {{\n'
-                '    "TICKER": {{"action":"...","quantity":int,"confidence":int,"reasoning":"..."}}\n'
+                '    "TICKER": {{"action":"...","quantity":int,"confidence":int,"reasoning":"用中文写的..."}}\n'
                 "  }}\n"
                 "}}"
             ),

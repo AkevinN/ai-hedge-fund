@@ -66,7 +66,7 @@ export function NodeShell({
               {icon}
             </div>
             <div className="text-title font-semibold text-primary">
-              {name || "自定义组件"}
+              {name || "自定义节点"}
             </div>
           </CardHeader>
           {description && (

@@ -52,18 +52,43 @@ export function AgentOutputDialog({
     .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) // 按时间戳排序
     .reduce<Record<string, string>>((acc, msg) => {
       // 将此消息的分析添加到累积分析中
-      if (msg.analysis && Object.keys(msg.analysis).length > 0) {
-        // 在添加到累积决策之前过滤掉空值
-        const validDecisions = Object.entries(msg.analysis)
-          .filter(([_, value]) => value !== null && value !== undefined)
-          .reduce((obj, [key, value]) => {
-            obj[key] = value;
-            return obj;
-          }, {} as Record<string, string>);
-
-        if (Object.keys(validDecisions).length > 0) {
-          // 与累积决策合并，对于相同股票代码，新消息覆盖旧消息
-          return { ...acc, ...validDecisions };
+      if (msg.analysis) {
+        // 处理分析数据 - 可能是字符串或对象
+        if (typeof msg.analysis === 'string') {
+          const analysisStr = msg.analysis;
+          // 如果是字符串，尝试解析为JSON
+          try {
+            const parsed = JSON.parse(analysisStr);
+            if (parsed && typeof parsed === 'object') {
+              // 如果解析成功且是对象，合并到累积分析
+              const validDecisions = Object.entries(parsed)
+                .filter(([_, value]) => value !== null && value !== undefined)
+                .reduce((obj, [key, value]) => {
+                  obj[key] = String(value);
+                  return obj;
+                }, {} as Record<string, string>);
+              if (Object.keys(validDecisions).length > 0) {
+                return { ...acc, ...validDecisions };
+              }
+            }
+          } catch (e) {
+            // 如果JSON解析失败，直接使用字符串
+            // 这可能是单个股票的分析结果
+            if (msg.ticker && (analysisStr as string).trim().length > 0) {
+              return { ...acc, [msg.ticker]: analysisStr };
+            }
+          }
+        } else if (typeof msg.analysis === 'object' && msg.analysis !== null) {
+          // 如果已经是对象，直接合并
+          const validDecisions = Object.entries(msg.analysis)
+            .filter(([_, value]) => value !== null && value !== undefined)
+            .reduce((obj, [key, value]) => {
+              obj[key] = String(value);
+              return obj;
+            }, {} as Record<string, string>);
+          if (Object.keys(validDecisions).length > 0) {
+            return { ...acc, ...validDecisions };
+          }
         }
       }
       return acc;

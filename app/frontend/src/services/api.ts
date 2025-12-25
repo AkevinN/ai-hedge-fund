@@ -201,7 +201,7 @@ export const api = {
                       // Also update the output node
                       nodeContext.updateAgentNode(flowId, 'output', {
                         status: 'COMPLETE',
-                        message: 'Analysis complete'
+                        message: '分析完成'
                       });
 
                       // Update flow connection state to completed

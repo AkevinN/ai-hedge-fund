@@ -30,7 +30,7 @@ export function ModelSelector({
   models, 
   value, 
   onChange, 
-  placeholder = "Select a model..." 
+  placeholder = "选择模型..." 
 }: ModelSelectorProps) {
   const [open, setOpen] = React.useState(false)
 
@@ -53,9 +53,9 @@ export function ModelSelector({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[350px] p-0 bg-node border border-border shadow-lg">
         <Command className="bg-node">
-          <CommandInput placeholder="Search model..." className="h-9 bg-node" />
+          <CommandInput placeholder="搜索模型..." className="h-9 bg-node" />
           <CommandList className="bg-node">
-            <CommandEmpty>No model found.</CommandEmpty>
+            <CommandEmpty>未找到模型</CommandEmpty>
             <CommandGroup>
               {models.map((model) => (
                 <CommandItem

@@ -13,7 +13,7 @@ export function CustomControls({ onReset }: CustomControlsProps) {
       style={{ bottom: 20, borderRadius: 20, gap: 10 }}
       className="bg-ramp-grey-800 text-primary px-4 py-2 rounded-md [&_button]:border-0 [&_button]:outline-0 [&_button]:shadow-none"
     >
-            <ControlButton onClick={onReset} title="Reset Flow">
+            <ControlButton onClick={onReset} title="重置工作流">
               <ResetIcon />
             </ControlButton>
     </Controls>

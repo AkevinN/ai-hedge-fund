@@ -94,7 +94,7 @@ export const backtestApi = {
                       // Create a backtest agent entry
                       nodeContext.updateAgentNode(flowId, 'backtest', {
                         status: 'IN_PROGRESS',
-                        message: 'Starting backtest...',
+                        message: '正在启动回测...',
                         backtestResults: [],
                       });
                       break;
@@ -165,13 +165,13 @@ export const backtestApi = {
                       // Mark the backtest agent as complete
                       nodeContext.updateAgentNode(flowId, 'backtest', {
                         status: 'COMPLETE',
-                        message: 'Backtest completed successfully',
+                        message: '回测已成功完成',
                       });
                       
                       // Update the output node
                       nodeContext.updateAgentNode(flowId, 'output', {
                         status: 'COMPLETE',
-                        message: 'Backtest analysis complete'
+                        message: '回测分析完成'
                       });
 
                       // Update flow connection state to completed
@@ -197,7 +197,7 @@ export const backtestApi = {
                       // Mark nodes as error when there's an error
                       nodeContext.updateAgentNode(flowId, 'portfolio-start', {
                         status: 'ERROR',
-                        message: eventData.message || 'Backtest failed',
+                        message: eventData.message || '回测失败',
                       });
                       
                       // Update flow connection state to error
@@ -237,7 +237,7 @@ export const backtestApi = {
             // Mark nodes as error when there's a connection error
             nodeContext.updateAgentNode(flowId, 'portfolio-start', {
               status: 'ERROR',
-              message: 'Connection error during backtest',
+              message: '回测过程中连接错误',
             });
             
             // Update flow connection state to error
@@ -260,7 +260,7 @@ export const backtestApi = {
       // Mark nodes as error when there's a connection error
       nodeContext.updateAgentNode(flowId, 'portfolio-start', {
         status: 'ERROR',
-        message: 'Failed to connect to backtest service',
+        message: '无法连接到回测服务',
       });
       
       // Update flow connection state to error
