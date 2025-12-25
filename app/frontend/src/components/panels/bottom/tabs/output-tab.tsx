@@ -15,38 +15,38 @@ export function OutputTab({ className }: OutputTabProps) {
   const { getAgentNodeDataForFlow, getOutputNodeDataForFlow } = useNodeContext();
   const [updateTrigger, setUpdateTrigger] = useState(0);
   
-  // Get current flow data
+  // 获取当前流数据
   const agentData = getAgentNodeDataForFlow(currentFlowId?.toString() || null);
   const outputData = getOutputNodeDataForFlow(currentFlowId?.toString() || null);
-  
-  // Force re-render periodically to show real-time updates
+
+  // 定期强制重新渲染以显示实时更新
   useEffect(() => {
     const interval = setInterval(() => {
       setUpdateTrigger(prev => prev + 1);
     }, 1000);
-    
+
     return () => clearInterval(interval);
   }, []);
-  
-  // Detect if this is a backtest run
+
+  // 检测是否为回测运行
   const isBacktestRun = agentData && agentData['backtest'];
-  
-  // Sort agents for display (exclude backtest agent from regular agent list)
+
+  // 对代理进行排序显示（从常规代理列表中排除回测代理）
   const sortedAgents = sortAgents(Object.entries(agentData).filter(([agentId]) => agentId !== 'backtest'));
   
   return (
     <div className={cn("h-full overflow-y-auto font-mono text-sm", className)}>
-      {/* Render backtest output if this is a backtest run */}
+      {/* 如果是回测运行则渲染回测输出 */}
       {isBacktestRun && (
         <BacktestOutput agentData={agentData} outputData={outputData} />
       )}
-      
-      {/* Render regular output if not a backtest run */}
+
+      {/* 如果不是回测运行则渲染常规输出 */}
       {!isBacktestRun && (
         <RegularOutput sortedAgents={sortedAgents} outputData={outputData} />
       )}
-      
-      {/* Empty State */}
+
+      {/* 空状态 */}
       {!outputData && sortedAgents.length === 0 && !isBacktestRun && (
         <div className="text-center py-8 text-muted-foreground">
           没有可显示的输出。运行分析以查看进度和结果。

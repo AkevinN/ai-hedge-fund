@@ -24,7 +24,7 @@ router = APIRouter(prefix="/flows", tags=["flows"])
     },
 )
 async def create_flow(request: FlowCreateRequest, db: Session = Depends(get_db)):
-    """Create a new hedge fund flow"""
+    """创建新的对冲基金流程"""
     try:
         repo = FlowRepository(db)
         flow = repo.create_flow(
@@ -39,7 +39,7 @@ async def create_flow(request: FlowCreateRequest, db: Session = Depends(get_db))
         )
         return FlowResponse.from_orm(flow)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create flow: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"创建流程失败: {str(e)}")
 
 
 @router.get(
@@ -50,13 +50,13 @@ async def create_flow(request: FlowCreateRequest, db: Session = Depends(get_db))
     },
 )
 async def get_flows(include_templates: bool = True, db: Session = Depends(get_db)):
-    """Get all flows (summary view)"""
+    """获取所有流程（摘要视图）"""
     try:
         repo = FlowRepository(db)
         flows = repo.get_all_flows(include_templates=include_templates)
         return [FlowSummaryResponse.from_orm(flow) for flow in flows]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve flows: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索流程失败: {str(e)}")
 
 
 @router.get(
@@ -68,17 +68,17 @@ async def get_flows(include_templates: bool = True, db: Session = Depends(get_db
     },
 )
 async def get_flow(flow_id: int, db: Session = Depends(get_db)):
-    """Get a specific flow by ID"""
+    """根据ID获取特定流程"""
     try:
         repo = FlowRepository(db)
         flow = repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
+            raise HTTPException(status_code=404, detail="流程未找到")
         return FlowResponse.from_orm(flow)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve flow: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索流程失败: {str(e)}")
 
 
 @router.put(
@@ -90,7 +90,7 @@ async def get_flow(flow_id: int, db: Session = Depends(get_db)):
     },
 )
 async def update_flow(flow_id: int, request: FlowUpdateRequest, db: Session = Depends(get_db)):
-    """Update an existing flow"""
+    """更新现有流程"""
     try:
         repo = FlowRepository(db)
         flow = repo.update_flow(
@@ -105,12 +105,12 @@ async def update_flow(flow_id: int, request: FlowUpdateRequest, db: Session = De
             tags=request.tags
         )
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
+            raise HTTPException(status_code=404, detail="流程未找到")
         return FlowResponse.from_orm(flow)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update flow: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新流程失败: {str(e)}")
 
 
 @router.delete(
@@ -122,17 +122,17 @@ async def update_flow(flow_id: int, request: FlowUpdateRequest, db: Session = De
     },
 )
 async def delete_flow(flow_id: int, db: Session = Depends(get_db)):
-    """Delete a flow"""
+    """删除流程"""
     try:
         repo = FlowRepository(db)
         success = repo.delete_flow(flow_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        return {"message": "Flow deleted successfully"}
+            raise HTTPException(status_code=404, detail="流程未找到")
+        return {"message": "流程删除成功"}
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete flow: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除流程失败: {str(e)}")
 
 
 @router.post(
@@ -144,17 +144,17 @@ async def delete_flow(flow_id: int, db: Session = Depends(get_db)):
     },
 )
 async def duplicate_flow(flow_id: int, new_name: str = None, db: Session = Depends(get_db)):
-    """Create a copy of an existing flow"""
+    """创建现有流程的副本"""
     try:
         repo = FlowRepository(db)
         flow = repo.duplicate_flow(flow_id, new_name)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
+            raise HTTPException(status_code=404, detail="流程未找到")
         return FlowResponse.from_orm(flow)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to duplicate flow: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"复制流程失败: {str(e)}")
 
 
 @router.get(
@@ -165,10 +165,10 @@ async def duplicate_flow(flow_id: int, new_name: str = None, db: Session = Depen
     },
 )
 async def search_flows(name: str, db: Session = Depends(get_db)):
-    """Search flows by name"""
+    """按名称搜索流程"""
     try:
         repo = FlowRepository(db)
         flows = repo.get_flows_by_name(name)
         return [FlowSummaryResponse.from_orm(flow) for flow in flows]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to search flows: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"搜索流程失败: {str(e)}") 

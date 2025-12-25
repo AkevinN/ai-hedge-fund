@@ -23,15 +23,15 @@ export function BottomPanel({
 }: BottomPanelProps) {
   const { currentBottomTab, setBottomPanelTab } = useLayoutContext();
   
-  // Use our custom hooks for vertical resizing
+  // 使用自定义钩子进行垂直调整大小
   const { height, isDragging, elementRef, startResize } = useResizable({
     defaultHeight: 300,
     minHeight: 200,
     maxHeight: window.innerHeight,
     side: 'bottom',
   });
-  
-  // Notify parent component of height changes
+
+  // 通知父组件高度变化
   useEffect(() => {
     onHeightChange?.(height);
   }, [height, onHeightChange]);
@@ -51,15 +51,15 @@ export function BottomPanel({
         height: `${height}px`,
       }}
     >
-      {/* Resize handle - on the top for bottom panel */}
+      {/* 调整大小手柄 - 位于底部面板顶部 */}
       {!isDragging && (
-        <div 
+        <div
           className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize transition-all duration-150 z-10 hover-bg"
           onMouseDown={startResize}
         />
       )}
 
-      {/* Header with tabs and close button */}
+      {/* 标题栏包含标签页和关闭按钮 */}
       <div className="flex items-center justify-between border-b px-4 py-2">
         <Tabs value={currentBottomTab} onValueChange={setBottomPanelTab} className="flex-1">
           <div className="flex items-center justify-between">
@@ -78,7 +78,7 @@ export function BottomPanel({
               size="icon"
               onClick={onToggleCollapse}
               className="h-6 w-6 text-primary hover-bg"
-              aria-label="Close panel"
+              aria-label="关闭面板"
             >
               <X size={14} />
             </Button>
@@ -86,7 +86,7 @@ export function BottomPanel({
         </Tabs>
       </div>
 
-      {/* Content area */}
+      {/* 内容区域 */}
       <div className="flex-1 min-h-0 overflow-hidden">
         <Tabs value={currentBottomTab} className="h-full">
           <TabsContent value="output" className="h-full m-0 p-4">

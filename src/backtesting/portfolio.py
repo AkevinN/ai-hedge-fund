@@ -7,11 +7,11 @@ from .types import PortfolioSnapshot, PositionState, TickerRealizedGains
 
 
 class Portfolio:
-    """Portfolio state management for backtesting operations.
+    """回测操作的投资组合状态管理。
 
-    Encapsulates cash, positions, and margin tracking.
-    Supports both long and short positions with proper cost basis tracking
-    and realized gains/losses calculation.
+    封装现金、持仓和保证金跟踪。
+    支持多头和空头持仓，具有适当的成本基础跟踪
+    和已实现盈亏计算。
     """
 
     def __init__(

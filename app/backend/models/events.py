@@ -3,24 +3,24 @@ from pydantic import BaseModel
 
 
 class BaseEvent(BaseModel):
-    """Base class for all Server-Sent Event events"""
+    """所有 Server-Sent Event 事件的基类"""
 
     type: str
 
     def to_sse(self) -> str:
-        """Convert to Server-Sent Event format"""
+        """转换为 Server-Sent Event 格式"""
         event_type = self.type.lower()
         return f"event: {event_type}\ndata: {self.model_dump_json()}\n\n"
 
 
 class StartEvent(BaseEvent):
-    """Event indicating the start of processing"""
+    """表示处理开始的事件"""
 
     type: Literal["start"] = "start"
     timestamp: Optional[str] = None
 
 class ProgressUpdateEvent(BaseEvent):
-    """Event containing an agent's progress update"""
+    """包含 agent 进度更新的事件"""
 
     type: Literal["progress"] = "progress"
     agent: str
@@ -30,7 +30,7 @@ class ProgressUpdateEvent(BaseEvent):
     analysis: Optional[str] = None
 
 class ErrorEvent(BaseEvent):
-    """Event indicating an error occurred"""
+    """表示发生错误的事件"""
 
     type: Literal["error"] = "error"
     message: str
@@ -38,7 +38,7 @@ class ErrorEvent(BaseEvent):
 
 
 class CompleteEvent(BaseEvent):
-    """Event indicating successful completion with results"""
+    """表示成功完成并带有结果的事件"""
 
     type: Literal["complete"] = "complete"
     data: Dict[str, Any]

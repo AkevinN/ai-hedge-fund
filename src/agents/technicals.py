@@ -35,11 +35,11 @@ def safe_float(value, default=0.0):
 def technical_analyst_agent(state: AgentState, agent_id: str = "technical_analyst_agent"):
     """
     Sophisticated technical analysis system that combines multiple trading strategies for multiple tickers:
-    1. Trend Following
-    2. Mean Reversion
-    3. Momentum
-    4. Volatility Analysis
-    5. Statistical Arbitrage Signals
+    1. 趋势跟踪
+    2. 均值回归
+    3. 动量
+    4. 波动率分析
+    5. 统计套利信号
     """
     data = state["data"]
     start_date = data["start_date"]
@@ -50,7 +50,7 @@ def technical_analyst_agent(state: AgentState, agent_id: str = "technical_analys
     technical_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Analyzing price data")
+        progress.update_status(agent_id, ticker, "分析价格数据")
 
         # Get the historical price data
         prices = get_prices(
@@ -61,25 +61,25 @@ def technical_analyst_agent(state: AgentState, agent_id: str = "technical_analys
         )
 
         if not prices:
-            progress.update_status(agent_id, ticker, "Failed: No price data found")
+            progress.update_status(agent_id, ticker, "失败：未找到价格数据")
             continue
 
         # Convert prices to a DataFrame
         prices_df = prices_to_df(prices)
 
-        progress.update_status(agent_id, ticker, "Calculating trend signals")
+        progress.update_status(agent_id, ticker, "计算趋势信号")
         trend_signals = calculate_trend_signals(prices_df)
 
-        progress.update_status(agent_id, ticker, "Calculating mean reversion")
+        progress.update_status(agent_id, ticker, "计算均值回归")
         mean_reversion_signals = calculate_mean_reversion_signals(prices_df)
 
-        progress.update_status(agent_id, ticker, "Calculating momentum")
+        progress.update_status(agent_id, ticker, "计算动量")
         momentum_signals = calculate_momentum_signals(prices_df)
 
-        progress.update_status(agent_id, ticker, "Analyzing volatility")
+        progress.update_status(agent_id, ticker, "分析波动率")
         volatility_signals = calculate_volatility_signals(prices_df)
 
-        progress.update_status(agent_id, ticker, "Statistical analysis")
+        progress.update_status(agent_id, ticker, "统计分析")
         stat_arb_signals = calculate_stat_arb_signals(prices_df)
 
         # Combine all signals using a weighted ensemble approach
@@ -91,7 +91,7 @@ def technical_analyst_agent(state: AgentState, agent_id: str = "technical_analys
             "stat_arb": 0.15,
         }
 
-        progress.update_status(agent_id, ticker, "Combining signals")
+        progress.update_status(agent_id, ticker, "合并信号")
         combined_signal = weighted_signal_combination(
             {
                 "trend": trend_signals,
@@ -135,7 +135,7 @@ def technical_analyst_agent(state: AgentState, agent_id: str = "technical_analys
                 },
             },
         }
-        progress.update_status(agent_id, ticker, "Done", analysis=json.dumps(technical_analysis, indent=4))
+        progress.update_status(agent_id, ticker, "完成", analysis=json.dumps(technical_analysis, indent=4))
 
     # Create the technical analyst message
     message = HumanMessage(
@@ -149,7 +149,7 @@ def technical_analyst_agent(state: AgentState, agent_id: str = "technical_analys
     # Add the signal to the analyst_signals list
     state["data"]["analyst_signals"][agent_id] = technical_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {
         "messages": state["messages"] + [message],

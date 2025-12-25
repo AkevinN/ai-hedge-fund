@@ -18,24 +18,24 @@ export function RightSidebar({
   isCollapsed,
   onWidthChange,
 }: RightSidebarProps) {
-  // Use our custom hooks
+  // 使用自定义 hooks
   const { width, isDragging, elementRef, startResize } = useResizable({
     defaultWidth: 280,
     minWidth: 200,
     maxWidth: window.innerWidth * .90,
     side: 'right',
   });
-  
-  // Notify parent component of width changes
+
+  // 通知父组件宽度变化
   useEffect(() => {
     onWidthChange?.(width);
   }, [width, onWidthChange]);
-  
-  // State for loading component groups
+
+  // 加载组件组的状态
   const [componentGroups, setComponentGroups] = useState<ComponentGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Load component groups on mount
+
+  // 在组件挂载时加载组件组
   useEffect(() => {
     const loadComponentGroups = async () => {
       try {
@@ -43,12 +43,12 @@ export function RightSidebar({
         const groups = await getComponentGroups();
         setComponentGroups(groups);
       } catch (error) {
-        console.error('Failed to load component groups:', error);
+        console.error('加载组件组失败:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadComponentGroups();
   }, []);
   
@@ -85,9 +85,9 @@ export function RightSidebar({
         onAccordionChange={handleAccordionChange}
       />
       
-      {/* Resize handle - on the left side for right sidebar */}
+      {/* 调整大小手柄 - 右侧边栏位于左侧 */}
       {!isDragging && (
-        <div 
+        <div
           className="absolute top-0 left-0 h-full w-1 cursor-ew-resize transition-all duration-150 z-10"
           onMouseDown={startResize}
         />

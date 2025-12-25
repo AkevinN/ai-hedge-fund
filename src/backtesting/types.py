@@ -14,12 +14,12 @@ class Action(str, Enum):
     COVER = "cover"
     HOLD = "hold"
 
-# Backward-compatible alias
+# 向后兼容别名
 ActionLiteral = Literal["buy", "sell", "short", "cover", "hold"]
 
 
 class PositionState(TypedDict):
-    """Represents per-ticker position state in the portfolio."""
+    """表示投资组合中每个股票的持仓状态。"""
 
     long: int
     short: int
@@ -29,17 +29,17 @@ class PositionState(TypedDict):
 
 
 class TickerRealizedGains(TypedDict):
-    """Realized PnL per side for a single ticker."""
+    """单个股票每侧的已实现盈亏。"""
 
     long: float
     short: float
 
 
 class PortfolioSnapshot(TypedDict):
-    """Snapshot of portfolio state.
+    """投资组合状态快照。
 
-    The structure mirrors the existing dict used by the current Backtester
-    to ensure drop-in compatibility during incremental refactors.
+    该结构镜像了当前 Backtester 使用的现有字典，
+    以确保在增量重构期间的即插即用兼容性。
     """
 
     cash: float
@@ -49,7 +49,7 @@ class PortfolioSnapshot(TypedDict):
     realized_gains: Dict[str, TickerRealizedGains]
 
 
-# DataFrame alias for clarity in interfaces
+# DataFrame 别名用于接口清晰
 PriceDataFrame = pd.DataFrame
 
 
@@ -61,7 +61,7 @@ class AgentDecision(TypedDict):
 AgentDecisions = Dict[str, AgentDecision]
 
 
-# Analyst signal payloads can vary by agent; keep as loose dicts
+# 分析师信号负载可能因 agent 而异；保持为松散字典
 AnalystSignal = Dict[str, Any]
 AgentSignals = Dict[str, Dict[str, AnalystSignal]]
 
@@ -71,7 +71,7 @@ class AgentOutput(TypedDict):
     analyst_signals: AgentSignals
 
 
-# Use functional style to allow keys with spaces to mirror current code
+# 使用函数式风格允许带空格的键以镜像当前代码
 PortfolioValuePoint = TypedDict(
     "PortfolioValuePoint",
     {
@@ -88,10 +88,10 @@ PortfolioValuePoint = TypedDict(
 
 
 class PerformanceMetrics(TypedDict, total=False):
-    """Performance metrics computed over the equity curve.
+    """在权益曲线上计算的性能指标。
 
-    Keys are aligned with the current implementation in src/backtester.py.
-    Values are optional to support progressive calculation over time.
+    键与 src/backtester.py 中的当前实现对齐。
+    值是可选的，以支持随时间的渐进计算。
     """
 
     sharpe_ratio: Optional[float]

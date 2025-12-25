@@ -15,22 +15,22 @@ class RakeshJhunjhunwalaSignal(BaseModel):
     reasoning: str
 
 def rakesh_jhunjhunwala_agent(state: AgentState, agent_id: str = "rakesh_jhunjhunwala_agent"):
-    """Analyzes stocks using Rakesh Jhunjhunwala's principles and LLM reasoning."""
+    """使用 Rakesh Jhunjhunwala 的投资原则和 LLM 推理分析股票。"""
     data = state["data"]
     end_date = data["end_date"]
     tickers = data["tickers"]
     api_key = get_api_key_from_state(state, "FINANCIAL_DATASETS_API_KEY")
-    # Collect all analysis for LLM reasoning
+    # 收集所有分析数据用于 LLM 推理
     analysis_data = {}
     jhunjhunwala_analysis = {}
 
     for ticker in tickers:
 
-        # Core Data
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        # 核心数据
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="ttm", limit=5, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching financial line items")
+        progress.update_status(agent_id, ticker, "获取财务项目明细")
         financial_line_items = search_line_items(
             ticker,
             [
@@ -52,30 +52,30 @@ def rakesh_jhunjhunwala_agent(state: AgentState, agent_id: str = "rakesh_jhunjhu
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        # ─── Analyses ───────────────────────────────────────────────────────────
-        progress.update_status(agent_id, ticker, "Analyzing growth")
+        # ─── 分析 ───────────────────────────────────────────────────────────
+        progress.update_status(agent_id, ticker, "分析成长性")
         growth_analysis = analyze_growth(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing profitability")
+        progress.update_status(agent_id, ticker, "分析盈利能力")
         profitability_analysis = analyze_profitability(financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Analyzing balance sheet")
+
+        progress.update_status(agent_id, ticker, "分析资产负债表")
         balancesheet_analysis = analyze_balance_sheet(financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Analyzing cash flow")
+
+        progress.update_status(agent_id, ticker, "分析现金流")
         cashflow_analysis = analyze_cash_flow(financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Analyzing management actions")
+
+        progress.update_status(agent_id, ticker, "分析管理层行动")
         management_analysis = analyze_management_actions(financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Calculating intrinsic value")
-        # Calculate intrinsic value once
+
+        progress.update_status(agent_id, ticker, "计算内在价值")
+        # 只计算一次内在价值
         intrinsic_value = calculate_intrinsic_value(financial_line_items, market_cap)
 
-        # ─── Score & margin of safety ──────────────────────────────────────────
+        # ─── 评分与安全边际 ──────────────────────────────────────────
         total_score = (
             growth_analysis["score"]
             + profitability_analysis["score"]
@@ -83,38 +83,38 @@ def rakesh_jhunjhunwala_agent(state: AgentState, agent_id: str = "rakesh_jhunjhu
             + cashflow_analysis["score"]
             + management_analysis["score"]
         )
-        # Fixed: Correct max_score calculation based on actual scoring breakdown
-        max_score = 24  # 8(prof) + 7(growth) + 4(bs) + 3(cf) + 2(mgmt) = 24
+        # 修正：基于实际评分明细的正确 max_score 计算
+        max_score = 24  # 8(盈利) + 7(成长) + 4(资产) + 3(现金流) + 2(管理) = 24
 
-        # Calculate margin of safety
+        # 计算安全边际
         margin_of_safety = (
             (intrinsic_value - market_cap) / market_cap if intrinsic_value and market_cap else None
         )
 
-        # Jhunjhunwala's decision rules (30% minimum margin of safety for conviction)
+        # Jhunjhunwala 的决策规则（最低 30% 安全边际才有信心）
         if margin_of_safety is not None and margin_of_safety >= 0.30:
             signal = "bullish"
         elif margin_of_safety is not None and margin_of_safety <= -0.30:
             signal = "bearish"
         else:
-            # Use quality score as tie-breaker for neutral cases
+            # 中性情况下使用质量评分作为决定因素
             quality_score = assess_quality_metrics(financial_line_items)
             if quality_score >= 0.7 and total_score >= max_score * 0.6:
-                signal = "bullish"  # High quality company at fair price
+                signal = "bullish"  # 高质量公司价格合理
             elif quality_score <= 0.4 or total_score <= max_score * 0.3:
-                signal = "bearish"  # Poor quality or fundamentals
+                signal = "bearish"  # 质量差或基本面差
             else:
                 signal = "neutral"
 
-        # Confidence based on margin of safety and quality
+        # 基于安全边际和质量的信心度
         if margin_of_safety is not None:
-            confidence = min(max(abs(margin_of_safety) * 150, 20), 95)  # 20-95% range
+            confidence = min(max(abs(margin_of_safety) * 150, 20), 95)  # 20-95% 范围
         else:
-            confidence = min(max((total_score / max_score) * 100, 10), 80)  # Based on score
+            confidence = min(max((total_score / max_score) * 100, 10), 80)  # 基于评分
 
-        # Create comprehensive analysis summary
+        # 创建综合分析摘要
         intrinsic_value_analysis = analyze_rakesh_jhunjhunwala_style(
-            financial_line_items, 
+            financial_line_items,
             intrinsic_value=intrinsic_value,
             current_price=market_cap
         )
@@ -134,8 +134,8 @@ def rakesh_jhunjhunwala_agent(state: AgentState, agent_id: str = "rakesh_jhunjhu
             "market_cap": market_cap,
         }
 
-        # ─── LLM: craft Jhunjhunwala‑style narrative ──────────────────────────────
-        progress.update_status(agent_id, ticker, "Generating Jhunjhunwala analysis")
+        # ─── LLM：生成 Jhunjhunwala 风格的分析 ──────────────────────────────
+        progress.update_status(agent_id, ticker, "生成 Jhunjhunwala 分析")
         jhunjhunwala_output = generate_jhunjhunwala_output(
             ticker=ticker,
             analysis_data=analysis_data[ticker],
@@ -145,142 +145,142 @@ def rakesh_jhunjhunwala_agent(state: AgentState, agent_id: str = "rakesh_jhunjhu
 
         jhunjhunwala_analysis[ticker] = jhunjhunwala_output.model_dump()
 
-        progress.update_status(agent_id, ticker, "Done", analysis=jhunjhunwala_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=jhunjhunwala_output.reasoning)
 
-    # ─── Push message back to graph state ──────────────────────────────────────
+    # ─── 将消息推送回图状态 ──────────────────────────────────────
     message = HumanMessage(content=json.dumps(jhunjhunwala_analysis), name=agent_id)
 
     if state["metadata"]["show_reasoning"]:
         show_agent_reasoning(jhunjhunwala_analysis, "Rakesh Jhunjhunwala Agent")
 
     state["data"]["analyst_signals"][agent_id] = jhunjhunwala_analysis
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {"messages": [message], "data": state["data"]}
 
 
 def analyze_profitability(financial_line_items: list) -> dict[str, any]:
     """
-    Analyze profitability metrics like net income, EBIT, EPS, operating income.
-    Focus on strong, consistent earnings growth and operating efficiency.
+    分析盈利能力指标，如净利润、EBIT、EPS、营业收入。
+    关注强劲、持续的盈利增长和运营效率。
     """
     if not financial_line_items:
-        return {"score": 0, "details": "No profitability data available"}
+        return {"score": 0, "details": "无盈利能力数据"}
 
     latest = financial_line_items[0]
     score = 0
     reasoning = []
 
-    # Calculate ROE (Return on Equity) - Jhunjhunwala's key metric
+    # 计算 ROE（净资产收益率）- Jhunjhunwala 的关键指标
     if (getattr(latest, 'net_income', None) and latest.net_income > 0 and
-        getattr(latest, 'total_assets', None) and getattr(latest, 'total_liabilities', None) and 
+        getattr(latest, 'total_assets', None) and getattr(latest, 'total_liabilities', None) and
         latest.total_assets and latest.total_liabilities):
-        
+
         shareholders_equity = latest.total_assets - latest.total_liabilities
         if shareholders_equity > 0:
             roe = (latest.net_income / shareholders_equity) * 100
-            if roe > 20:  # Excellent ROE
+            if roe > 20:  # 优秀的 ROE
                 score += 3
-                reasoning.append(f"Excellent ROE: {roe:.1f}%")
-            elif roe > 15:  # Good ROE
+                reasoning.append(f"优秀的 ROE: {roe:.1f}%")
+            elif roe > 15:  # 良好的 ROE
                 score += 2
-                reasoning.append(f"Good ROE: {roe:.1f}%")
-            elif roe > 10:  # Decent ROE
+                reasoning.append(f"良好的 ROE: {roe:.1f}%")
+            elif roe > 10:  # 不错的 ROE
                 score += 1
-                reasoning.append(f"Decent ROE: {roe:.1f}%")
+                reasoning.append(f"不错的 ROE: {roe:.1f}%")
             else:
-                reasoning.append(f"Low ROE: {roe:.1f}%")
+                reasoning.append(f"ROE 较低: {roe:.1f}%")
         else:
-            reasoning.append("Negative shareholders equity")
+            reasoning.append("股东权益为负")
     else:
-        reasoning.append("Unable to calculate ROE - missing data")
+        reasoning.append("无法计算 ROE - 数据缺失")
 
-    # Operating Margin Analysis
-    if (getattr(latest, "operating_income", None) and latest.operating_income and 
+    # 营业利润率分析
+    if (getattr(latest, "operating_income", None) and latest.operating_income and
         getattr(latest, "revenue", None) and latest.revenue and latest.revenue > 0):
         operating_margin = (latest.operating_income / latest.revenue) * 100
-        if operating_margin > 20:  # Excellent margin
+        if operating_margin > 20:  # 优秀利润率
             score += 2
-            reasoning.append(f"Excellent operating margin: {operating_margin:.1f}%")
-        elif operating_margin > 15:  # Good margin
+            reasoning.append(f"优秀的营业利润率: {operating_margin:.1f}%")
+        elif operating_margin > 15:  # 良好利润率
             score += 1
-            reasoning.append(f"Good operating margin: {operating_margin:.1f}%")
+            reasoning.append(f"良好的营业利润率: {operating_margin:.1f}%")
         elif operating_margin > 0:
-            reasoning.append(f"Positive operating margin: {operating_margin:.1f}%")
+            reasoning.append(f"正营业利润率: {operating_margin:.1f}%")
         else:
-            reasoning.append(f"Negative operating margin: {operating_margin:.1f}%")
+            reasoning.append(f"负营业利润率: {operating_margin:.1f}%")
     else:
-        reasoning.append("Unable to calculate operating margin")
+        reasoning.append("无法计算营业利润率")
 
-    # EPS Growth Consistency (3-year trend)
-    eps_values = [getattr(item, "earnings_per_share", None) for item in financial_line_items 
+    # EPS 增长一致性（3年趋势）
+    eps_values = [getattr(item, "earnings_per_share", None) for item in financial_line_items
                   if getattr(item, "earnings_per_share", None) is not None and getattr(item, "earnings_per_share", None) > 0]
-    
+
     if len(eps_values) >= 3:
-        # Calculate CAGR for EPS
-        initial_eps = eps_values[-1]  # Oldest value
-        final_eps = eps_values[0]     # Latest value
+        # 计算 EPS 的复合年增长率
+        initial_eps = eps_values[-1]  # 最早值
+        final_eps = eps_values[0]     # 最新值
         years = len(eps_values) - 1
-        
+
         if initial_eps > 0:
             eps_cagr = ((final_eps / initial_eps) ** (1/years) - 1) * 100
-            if eps_cagr > 20:  # High growth
+            if eps_cagr > 20:  # 高增长
                 score += 3
-                reasoning.append(f"High EPS CAGR: {eps_cagr:.1f}%")
-            elif eps_cagr > 15:  # Good growth
+                reasoning.append(f"高 EPS CAGR: {eps_cagr:.1f}%")
+            elif eps_cagr > 15:  # 良好增长
                 score += 2
-                reasoning.append(f"Good EPS CAGR: {eps_cagr:.1f}%")
-            elif eps_cagr > 10:  # Moderate growth
+                reasoning.append(f"良好 EPS CAGR: {eps_cagr:.1f}%")
+            elif eps_cagr > 10:  # 中等增长
                 score += 1
-                reasoning.append(f"Moderate EPS CAGR: {eps_cagr:.1f}%")
+                reasoning.append(f"中等 EPS CAGR: {eps_cagr:.1f}%")
             else:
-                reasoning.append(f"Low EPS CAGR: {eps_cagr:.1f}%")
+                reasoning.append(f"低 EPS CAGR: {eps_cagr:.1f}%")
         else:
-            reasoning.append("Cannot calculate EPS growth from negative base")
+            reasoning.append("无法从负基数计算 EPS 增长")
     else:
-        reasoning.append("Insufficient EPS data for growth analysis")
+        reasoning.append("EPS 数据不足，无法进行增长分析")
 
     return {"score": score, "details": "; ".join(reasoning)}
 
 
 def analyze_growth(financial_line_items: list) -> dict[str, any]:
     """
-    Analyze revenue and net income growth trends using CAGR.
-    Jhunjhunwala favored companies with strong, consistent compound growth.
+    使用 CAGR 分析收入和净利润增长趋势。
+    Jhunjhunwala 青睐具有强劲、持续复合增长的公司。
     """
     if len(financial_line_items) < 3:
-        return {"score": 0, "details": "Insufficient data for growth analysis"}
+        return {"score": 0, "details": "数据不足，无法进行增长分析"}
 
     score = 0
     reasoning = []
 
-    # Revenue CAGR Analysis
-    revenues = [getattr(item, "revenue", None) for item in financial_line_items 
+    # 收入 CAGR 分析
+    revenues = [getattr(item, "revenue", None) for item in financial_line_items
                 if getattr(item, "revenue", None) is not None and getattr(item, "revenue", None) > 0]
-    
+
     if len(revenues) >= 3:
-        initial_revenue = revenues[-1]  # Oldest
-        final_revenue = revenues[0]     # Latest
+        initial_revenue = revenues[-1]  # 最早
+        final_revenue = revenues[0]     # 最新
         years = len(revenues) - 1
-        
-        if initial_revenue > 0:  # Fixed: Add zero check
+
+        if initial_revenue > 0:  # 修正：添加零值检查
             revenue_cagr = ((final_revenue / initial_revenue) ** (1/years) - 1) * 100
-            
-            if revenue_cagr > 20:  # High growth
+
+            if revenue_cagr > 20:  # 高增长
                 score += 3
-                reasoning.append(f"Excellent revenue CAGR: {revenue_cagr:.1f}%")
-            elif revenue_cagr > 15:  # Good growth
+                reasoning.append(f"优秀的收入 CAGR: {revenue_cagr:.1f}%")
+            elif revenue_cagr > 15:  # 良好增长
                 score += 2
-                reasoning.append(f"Good revenue CAGR: {revenue_cagr:.1f}%")
-            elif revenue_cagr > 10:  # Moderate growth
+                reasoning.append(f"良好的收入 CAGR: {revenue_cagr:.1f}%")
+            elif revenue_cagr > 10:  # 中等增长
                 score += 1
-                reasoning.append(f"Moderate revenue CAGR: {revenue_cagr:.1f}%")
+                reasoning.append(f"中等收入 CAGR: {revenue_cagr:.1f}%")
             else:
-                reasoning.append(f"Low revenue CAGR: {revenue_cagr:.1f}%")
+                reasoning.append(f"低收入 CAGR: {revenue_cagr:.1f}%")
         else:
-            reasoning.append("Cannot calculate revenue CAGR from zero base")
+            reasoning.append("无法从零基数计算收入 CAGR")
     else:
-        reasoning.append("Insufficient revenue data for CAGR calculation")
+        reasoning.append("收入数据不足，无法计算 CAGR")
 
     # Net Income CAGR Analysis
     net_incomes = [getattr(item, "net_income", None) for item in financial_line_items 
@@ -326,93 +326,93 @@ def analyze_growth(financial_line_items: list) -> dict[str, any]:
 
 def analyze_balance_sheet(financial_line_items: list) -> dict[str, any]:
     """
-    Check financial strength - healthy asset/liability structure, liquidity.
-    Jhunjhunwala favored companies with clean balance sheets and manageable debt.
+    检查财务实力 - 健康的资产/负债结构、流动性。
+    Jhunjhunwala 青睐资产负债表干净、债务可控的公司。
     """
     if not financial_line_items:
-        return {"score": 0, "details": "No balance sheet data"}
+        return {"score": 0, "details": "无资产负债表数据"}
 
     latest = financial_line_items[0]
     score = 0
     reasoning = []
 
-    # Debt to asset ratio
-    if (getattr(latest, "total_assets", None) and getattr(latest, "total_liabilities", None) 
-        and latest.total_assets and latest.total_liabilities 
+    # 负债与资产比率
+    if (getattr(latest, "total_assets", None) and getattr(latest, "total_liabilities", None)
+        and latest.total_assets and latest.total_liabilities
         and latest.total_assets > 0):
         debt_ratio = latest.total_liabilities / latest.total_assets
         if debt_ratio < 0.5:
             score += 2
-            reasoning.append(f"Low debt ratio: {debt_ratio:.2f}")
+            reasoning.append(f"低负债比率: {debt_ratio:.2f}")
         elif debt_ratio < 0.7:
             score += 1
-            reasoning.append(f"Moderate debt ratio: {debt_ratio:.2f}")
+            reasoning.append(f"中等负债比率: {debt_ratio:.2f}")
         else:
-            reasoning.append(f"High debt ratio: {debt_ratio:.2f}")
+            reasoning.append(f"高负债比率: {debt_ratio:.2f}")
     else:
-        reasoning.append("Insufficient data to calculate debt ratio")
+        reasoning.append("数据不足，无法计算负债比率")
 
-    # Current ratio (liquidity)
-    if (getattr(latest, "current_assets", None) and getattr(latest, "current_liabilities", None) 
-        and latest.current_assets and latest.current_liabilities 
+    # 流动比率（流动性）
+    if (getattr(latest, "current_assets", None) and getattr(latest, "current_liabilities", None)
+        and latest.current_assets and latest.current_liabilities
         and latest.current_liabilities > 0):
         current_ratio = latest.current_assets / latest.current_liabilities
         if current_ratio > 2.0:
             score += 2
-            reasoning.append(f"Excellent liquidity with current ratio: {current_ratio:.2f}")
+            reasoning.append(f"优秀的流动性，流动比率: {current_ratio:.2f}")
         elif current_ratio > 1.5:
             score += 1
-            reasoning.append(f"Good liquidity with current ratio: {current_ratio:.2f}")
+            reasoning.append(f"良好的流动性，流动比率: {current_ratio:.2f}")
         else:
-            reasoning.append(f"Weak liquidity with current ratio: {current_ratio:.2f}")
+            reasoning.append(f"流动性较弱，流动比率: {current_ratio:.2f}")
     else:
-        reasoning.append("Insufficient data to calculate current ratio")
+        reasoning.append("数据不足，无法计算流动比率")
 
     return {"score": score, "details": "; ".join(reasoning)}
 
 
 def analyze_cash_flow(financial_line_items: list) -> dict[str, any]:
     """
-    Evaluate free cash flow and dividend behavior.
-    Jhunjhunwala appreciated companies generating strong free cash flow and rewarding shareholders.
+    评估自由现金流和股息行为。
+    Jhunjhunwala 欣赏能产生强劲自由现金流并回报股东的公司。
     """
     if not financial_line_items:
-        return {"score": 0, "details": "No cash flow data"}
+        return {"score": 0, "details": "无现金流数据"}
 
     latest = financial_line_items[0]
     score = 0
     reasoning = []
 
-    # Free cash flow analysis
+    # 自由现金流分析
     if getattr(latest, "free_cash_flow", None) and latest.free_cash_flow:
         if latest.free_cash_flow > 0:
             score += 2
-            reasoning.append(f"Positive free cash flow: {latest.free_cash_flow}")
+            reasoning.append(f"正自由现金流: {latest.free_cash_flow}")
         else:
-            reasoning.append(f"Negative free cash flow: {latest.free_cash_flow}")
+            reasoning.append(f"负自由现金流: {latest.free_cash_flow}")
     else:
-        reasoning.append("Free cash flow data not available")
+        reasoning.append("无自由现金流数据")
 
-    # Dividend analysis
+    # 股息分析
     if getattr(latest, "dividends_and_other_cash_distributions", None) and latest.dividends_and_other_cash_distributions:
-        if latest.dividends_and_other_cash_distributions < 0:  # Negative indicates cash outflow for dividends
+        if latest.dividends_and_other_cash_distributions < 0:  # 负值表示股息支付的现金流出
             score += 1
-            reasoning.append("Company pays dividends to shareholders")
+            reasoning.append("公司向股东支付股息")
         else:
-            reasoning.append("No significant dividend payments")
+            reasoning.append("无重要股息支付")
     else:
-        reasoning.append("No dividend payment data available")
+        reasoning.append("无股息支付数据")
 
     return {"score": score, "details": "; ".join(reasoning)}
 
 
 def analyze_management_actions(financial_line_items: list) -> dict[str, any]:
     """
-    Look at share issuance or buybacks to assess shareholder friendliness.
-    Jhunjhunwala liked managements who buy back shares or avoid dilution.
+    查看股份发行或回购以评估对股东的友好程度。
+    Jhunjhunwala 喜欢回购股份或避免稀释的管理层。
     """
     if not financial_line_items:
-        return {"score": 0, "details": "No management action data"}
+        return {"score": 0, "details": "无管理层行动数据"}
 
     latest = financial_line_items[0]
     score = 0
@@ -420,27 +420,27 @@ def analyze_management_actions(financial_line_items: list) -> dict[str, any]:
 
     issuance = getattr(latest, "issuance_or_purchase_of_equity_shares", None)
     if issuance is not None:
-        if issuance < 0:  # Negative indicates share buybacks
+        if issuance < 0:  # 负值表示股份回购
             score += 2
-            reasoning.append(f"Company buying back shares: {abs(issuance)}")
+            reasoning.append(f"公司回购股份: {abs(issuance)}")
         elif issuance > 0:
-            reasoning.append(f"Share issuance detected (potential dilution): {issuance}")
+            reasoning.append(f"检测到股份发行（潜在稀释）: {issuance}")
         else:
             score += 1
-            reasoning.append("No recent share issuance or buyback")
+            reasoning.append("近期无股份发行或回购")
     else:
-        reasoning.append("No data on share issuance or buybacks")
+        reasoning.append("无股份发行或回购数据")
 
     return {"score": score, "details": "; ".join(reasoning)}
 
 
 def assess_quality_metrics(financial_line_items: list) -> float:
     """
-    Assess company quality based on Jhunjhunwala's criteria.
-    Returns a score between 0 and 1.
+    根据 Jhunjhunwala 的标准评估公司质量。
+    返回 0 到 1 之间的分数。
     """
     if not financial_line_items:
-        return 0.5  # Neutral score
+        return 0.5  # 中性分数
     
     latest = financial_line_items[0]
     quality_factors = []
@@ -497,10 +497,10 @@ def assess_quality_metrics(financial_line_items: list) -> float:
 
 def calculate_intrinsic_value(financial_line_items: list, market_cap: float) -> float:
     """
-    Calculate intrinsic value using Rakesh Jhunjhunwala's approach:
-    - Focus on earnings power and growth
-    - Conservative discount rates
-    - Quality premium for consistent performers
+    使用 Rakesh Jhunjhunwala 的方法计算内在价值：
+    - 关注盈利能力和增长
+    - 保守的折现率
+    - 对持续表现者给予质量溢价
     """
     if not financial_line_items or not market_cap:
         return None
@@ -588,9 +588,9 @@ def analyze_rakesh_jhunjhunwala_style(
     current_price: float = None,
 ) -> dict[str, any]:
     """
-    Comprehensive analysis in Rakesh Jhunjhunwala's investment style.
+    Rakesh Jhunjhunwala 投资风格的综合分析。
     """
-    # Run sub-analyses
+    # 运行子分析
     profitability = analyze_profitability(financial_line_items)
     growth = analyze_growth(financial_line_items)
     balance_sheet = analyze_balance_sheet(financial_line_items)
@@ -639,7 +639,7 @@ def analyze_rakesh_jhunjhunwala_style(
 
 
 # ────────────────────────────────────────────────────────────────────────────────
-# LLM generation
+# LLM 生成
 # ────────────────────────────────────────────────────────────────────────────────
 def generate_jhunjhunwala_output(
     ticker: str,
@@ -647,7 +647,7 @@ def generate_jhunjhunwala_output(
     state: AgentState,
     agent_id: str,
 ) -> RakeshJhunjhunwalaSignal:
-    """Get investment decision from LLM with Jhunjhunwala's principles"""
+    """使用 Jhunjhunwala 的原则从 LLM 获取投资决策"""
     template = ChatPromptTemplate.from_messages(
         [
             (
@@ -695,9 +695,9 @@ def generate_jhunjhunwala_output(
 
     prompt = template.invoke({"analysis_data": json.dumps(analysis_data, indent=2), "ticker": ticker})
 
-    # Default fallback signal in case parsing fails
+    # 解析失败时的默认回退信号
     def create_default_rakesh_jhunjhunwala_signal():
-        return RakeshJhunjhunwalaSignal(signal="neutral", confidence=0.0, reasoning="Error in analysis, defaulting to neutral")
+        return RakeshJhunjhunwalaSignal(signal="neutral", confidence=0.0, reasoning="分析出错，默认为中性")
 
     return call_llm(
         prompt=prompt,

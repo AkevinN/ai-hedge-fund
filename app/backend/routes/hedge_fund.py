@@ -25,32 +25,32 @@ router = APIRouter(prefix="/hedge-fund")
 )
 async def run(request_data: HedgeFundRequest, request: Request, db: Session = Depends(get_db)):
     try:
-        # Hydrate API keys from database if not provided
+        # 如果未提供API keys，从数据库加载
         if not request_data.api_keys:
             api_key_service = ApiKeyService(db)
             request_data.api_keys = api_key_service.get_api_keys_dict()
 
-        # Create the portfolio
+        # 创建投资组合
         portfolio = create_portfolio(request_data.initial_cash, request_data.margin_requirement, request_data.tickers, request_data.portfolio_positions)
 
-        # Construct agent graph using the React Flow graph structure
+        # 使用React Flow图结构构建agent图
         graph = create_graph(
             graph_nodes=request_data.graph_nodes,
             graph_edges=request_data.graph_edges
         )
         graph = graph.compile()
 
-        # Log a test progress update for debugging
-        progress.update_status("system", None, "Preparing hedge fund run")
+        # 记录测试进度更新用于调试
+        progress.update_status("system", None, "准备对冲基金运行")
 
-        # Convert model_provider to string if it's an enum
+        # 如果model_provider是枚举，转换为字符串
         model_provider = request_data.model_provider
         if hasattr(model_provider, "value"):
             model_provider = model_provider.value
 
-        # Function to detect client disconnection
+        # 检测客户端断开连接的函数
         async def wait_for_disconnect():
-            """Wait for client disconnect and return True when it happens"""
+            """等待客户端断开连接，发生时返回True"""
             try:
                 while True:
                     message = await request.receive()
@@ -59,23 +59,23 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
             except Exception:
                 return True
 
-        # Set up streaming response
+        # 设置流式响应
         async def event_generator():
-            # Queue for progress updates
+            # 进度更新队列
             progress_queue = asyncio.Queue()
             run_task = None
             disconnect_task = None
 
-            # Simple handler to add updates to the queue
+            # 简单的处理器，将更新添加到队列
             def progress_handler(agent_name, ticker, status, analysis, timestamp):
                 event = ProgressUpdateEvent(agent=agent_name, ticker=ticker, status=status, timestamp=timestamp, analysis=analysis)
                 progress_queue.put_nowait(event)
 
-            # Register our handler with the progress tracker
+            # 向进度跟踪器注册我们的处理器
             progress.register_handler(progress_handler)
 
             try:
-                # Start the graph execution in a background task
+                # 在后台任务中开始图执行
                 run_task = asyncio.create_task(
                     run_graph_async(
                         graph=graph,
@@ -85,21 +85,21 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
                         end_date=request_data.end_date,
                         model_name=request_data.model_name,
                         model_provider=model_provider,
-                        request=request_data,  # Pass the full request for agent-specific model access
+                        request=request_data,  # 传递完整请求以支持agent特定模型访问
                     )
                 )
-                
-                # Start the disconnect detection task
+
+                # 启动断开连接检测任务
                 disconnect_task = asyncio.create_task(wait_for_disconnect())
-                
-                # Send initial message
+
+                # 发送初始消息
                 yield StartEvent().to_sse()
 
-                # Stream progress updates until run_task completes or client disconnects
+                # 流式传输进度更新，直到run_task完成或客户端断开连接
                 while not run_task.done():
-                    # Check if client disconnected
+                    # 检查客户端是否断开
                     if disconnect_task.done():
-                        print("Client disconnected, cancelling hedge fund execution")
+                        print("客户端已断开连接，正在取消对冲基金执行")
                         run_task.cancel()
                         try:
                             await run_task
@@ -107,26 +107,26 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
                             pass
                         return
 
-                    # Either get a progress update or wait a bit
+                    # 获取进度更新或稍等
                     try:
                         event = await asyncio.wait_for(progress_queue.get(), timeout=1.0)
                         yield event.to_sse()
                     except asyncio.TimeoutError:
-                        # Just continue the loop
+                        # 继续循环
                         pass
 
-                # Get the final result
+                # 获取最终结果
                 try:
                     result = await run_task
                 except asyncio.CancelledError:
-                    print("Task was cancelled")
+                    print("任务已被取消")
                     return
 
                 if not result or not result.get("messages"):
-                    yield ErrorEvent(message="Failed to generate hedge fund decisions").to_sse()
+                    yield ErrorEvent(message="生成对冲基金决策失败").to_sse()
                     return
 
-                # Send the final result
+                # 发送最终结果
                 final_data = CompleteEvent(
                     data={
                         "decisions": parse_hedge_fund_response(result.get("messages", [])[-1].content),
@@ -137,10 +137,10 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
                 yield final_data.to_sse()
 
             except asyncio.CancelledError:
-                print("Event generator cancelled")
+                print("事件生成器已取消")
                 return
             finally:
-                # Clean up
+                # 清理
                 progress.unregister_handler(progress_handler)
                 if run_task and not run_task.done():
                     run_task.cancel()
@@ -151,13 +151,13 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
                 if disconnect_task and not disconnect_task.done():
                     disconnect_task.cancel()
 
-        # Return a streaming response
+        # 返回流式响应
         return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred while processing the request: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"处理请求时发生错误: {str(e)}")
 
 @router.post(
     path="/backtest",
@@ -168,31 +168,31 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
     },
 )
 async def backtest(request_data: BacktestRequest, request: Request, db: Session = Depends(get_db)):
-    """Run a continuous backtest over a time period with streaming updates."""
+    """在一段时间内运行连续回测，并进行流式更新"""
     try:
-        # Hydrate API keys from database if not provided
+        # 如果未提供API keys，从数据库加载
         if not request_data.api_keys:
             api_key_service = ApiKeyService(db)
             request_data.api_keys = api_key_service.get_api_keys_dict()
 
-        # Convert model_provider to string if it's an enum
+        # 如果model_provider是枚举，转换为字符串
         model_provider = request_data.model_provider
         if hasattr(model_provider, "value"):
             model_provider = model_provider.value
 
-        # Create the portfolio (same as /run endpoint)
+        # 创建投资组合（与/run端点相同）
         portfolio = create_portfolio(
-            request_data.initial_capital, 
-            request_data.margin_requirement, 
-            request_data.tickers, 
+            request_data.initial_capital,
+            request_data.margin_requirement,
+            request_data.tickers,
             request_data.portfolio_positions
         )
 
-        # Construct agent graph using the React Flow graph structure (same as /run endpoint)
+        # 使用React Flow图结构构建agent图（与/run端点相同）
         graph = create_graph(graph_nodes=request_data.graph_nodes, graph_edges=request_data.graph_edges)
         graph = graph.compile()
 
-        # Create backtest service with the compiled graph
+        # 使用编译后的图创建回测服务
         backtest_service = BacktestService(
             graph=graph,
             portfolio=portfolio,
@@ -202,12 +202,12 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
             initial_capital=request_data.initial_capital,
             model_name=request_data.model_name,
             model_provider=model_provider,
-            request=request_data,  # Pass the full request for agent-specific model access
+            request=request_data,  # 传递完整请求以支持agent特定模型访问
         )
 
-        # Function to detect client disconnection
+        # 检测客户端断开连接的函数
         async def wait_for_disconnect():
-            """Wait for client disconnect and return True when it happens"""
+            """等待客户端断开连接，发生时返回True"""
             try:
                 while True:
                     message = await request.receive()
@@ -216,18 +216,18 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
             except Exception:
                 return True
 
-        # Set up streaming response
+        # 设置流式响应
         async def event_generator():
             progress_queue = asyncio.Queue()
             backtest_task = None
             disconnect_task = None
 
-            # Global progress handler to capture individual agent updates during backtest
+            # 全局进度处理器，在回测期间捕获单个agent更新
             def progress_handler(agent_name, ticker, status, analysis, timestamp):
                 event = ProgressUpdateEvent(agent=agent_name, ticker=ticker, status=status, timestamp=timestamp, analysis=analysis)
                 progress_queue.put_nowait(event)
 
-            # Progress callback to handle backtest-specific updates
+            # 进度回调，处理特定于回测的更新
             def progress_callback(update):
                 if update["type"] == "progress":
                     event = ProgressUpdateEvent(
@@ -239,42 +239,42 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
                     )
                     progress_queue.put_nowait(event)
                 elif update["type"] == "backtest_result":
-                    # Convert day result to a streaming event
+                    # 将天结果转换为流式事件
                     backtest_result = BacktestDayResult(**update["data"])
-                    
-                    # Send the full day result data as JSON in the analysis field
+
+                    # 将完整的天结果数据作为JSON发送到analysis字段
                     import json
                     analysis_data = json.dumps(update["data"])
-                    
+
                     event = ProgressUpdateEvent(
                         agent="backtest",
                         ticker=None,
-                        status=f"Completed {backtest_result.date} - Portfolio: ${backtest_result.portfolio_value:,.2f}",
+                        status=f"完成 {backtest_result.date} - 投资组合: ${backtest_result.portfolio_value:,.2f}",
                         timestamp=None,
                         analysis=analysis_data
                     )
                     progress_queue.put_nowait(event)
 
-            # Register our handler with the progress tracker to capture agent updates
+            # 向进度跟踪器注册我们的处理器以捕获agent更新
             progress.register_handler(progress_handler)
-            
+
             try:
-                # Start the backtest in a background task
+                # 在后台任务中启动回测
                 backtest_task = asyncio.create_task(
                     backtest_service.run_backtest_async(progress_callback=progress_callback)
                 )
-                
-                # Start the disconnect detection task
+
+                # 启动断开连接检测任务
                 disconnect_task = asyncio.create_task(wait_for_disconnect())
-                
-                # Send initial message
+
+                # 发送初始消息
                 yield StartEvent().to_sse()
 
-                # Stream progress updates until backtest_task completes or client disconnects
+                # 流式传输进度更新，直到backtest_task完成或客户端断开连接
                 while not backtest_task.done():
-                    # Check if client disconnected
+                    # 检查客户端是否断开
                     if disconnect_task.done():
-                        print("Client disconnected, cancelling backtest execution")
+                        print("客户端已断开连接，正在取消回测执行")
                         backtest_task.cancel()
                         try:
                             await backtest_task
@@ -282,26 +282,26 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
                             pass
                         return
 
-                    # Either get a progress update or wait a bit
+                    # 获取进度更新或稍等
                     try:
                         event = await asyncio.wait_for(progress_queue.get(), timeout=1.0)
                         yield event.to_sse()
                     except asyncio.TimeoutError:
-                        # Just continue the loop
+                        # 继续循环
                         pass
 
-                # Get the final result
+                # 获取最终结果
                 try:
                     result = await backtest_task
                 except asyncio.CancelledError:
-                    print("Backtest task was cancelled")
+                    print("回测任务已被取消")
                     return
 
                 if not result:
-                    yield ErrorEvent(message="Failed to complete backtest").to_sse()
+                    yield ErrorEvent(message="完成回测失败").to_sse()
                     return
 
-                # Send the final result
+                # 发送最终结果
                 performance_metrics = BacktestPerformanceMetrics(**result["performance_metrics"])
                 final_data = CompleteEvent(
                     data={
@@ -313,10 +313,10 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
                 yield final_data.to_sse()
 
             except asyncio.CancelledError:
-                print("Backtest event generator cancelled")
+                print("回测事件生成器已取消")
                 return
             finally:
-                # Clean up
+                # 清理
                 progress.unregister_handler(progress_handler)
                 if backtest_task and not backtest_task.done():
                     backtest_task.cancel()
@@ -327,13 +327,13 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
                 if disconnect_task and not disconnect_task.done():
                     disconnect_task.cancel()
 
-        # Return a streaming response
+        # 返回流式响应
         return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred while processing the backtest request: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"处理回测请求时发生错误: {str(e)}")
 
 
 @router.get(
@@ -344,9 +344,9 @@ async def backtest(request_data: BacktestRequest, request: Request, db: Session 
     },
 )
 async def get_agents():
-    """Get the list of available agents."""
+    """获取可用的agents列表"""
     try:
         return {"agents": get_agents_list()}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve agents: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索agents失败: {str(e)}")
 

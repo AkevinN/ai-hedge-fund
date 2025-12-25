@@ -26,19 +26,19 @@ router = APIRouter(prefix="/flows/{flow_id}/runs", tags=["flow-runs"])
     },
 )
 async def create_flow_run(
-    flow_id: int, 
-    request: FlowRunCreateRequest, 
+    flow_id: int,
+    request: FlowRunCreateRequest,
     db: Session = Depends(get_db)
 ):
-    """Create a new flow run for the specified flow"""
+    """为指定流程创建新的运行"""
     try:
-        # Verify flow exists
+        # 验证流程是否存在
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Create the flow run
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 创建流程运行
         run_repo = FlowRunRepository(db)
         flow_run = run_repo.create_flow_run(
             flow_id=flow_id,
@@ -48,7 +48,7 @@ async def create_flow_run(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create flow run: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"创建流程运行失败: {str(e)}")
 
 
 @router.get(
@@ -65,22 +65,22 @@ async def get_flow_runs(
     offset: int = Query(0, ge=0, description="Number of runs to skip"),
     db: Session = Depends(get_db)
 ):
-    """Get all runs for the specified flow"""
+    """获取指定流程的所有运行"""
     try:
-        # Verify flow exists
+        # 验证流程是否存在
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Get flow runs
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 获取流程运行
         run_repo = FlowRunRepository(db)
         flow_runs = run_repo.get_flow_runs_by_flow_id(flow_id, limit=limit, offset=offset)
         return [FlowRunSummaryResponse.from_orm(run) for run in flow_runs]
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve flow runs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索流程运行失败: {str(e)}")
 
 
 @router.get(
@@ -92,22 +92,22 @@ async def get_flow_runs(
     },
 )
 async def get_active_flow_run(flow_id: int, db: Session = Depends(get_db)):
-    """Get the current active (IN_PROGRESS) run for the specified flow"""
+    """获取指定流程的当前活动运行（进行中）"""
     try:
-        # Verify flow exists
+        # 验证流程是否存在
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Get active flow run
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 获取活动的流程运行
         run_repo = FlowRunRepository(db)
         active_run = run_repo.get_active_flow_run(flow_id)
         return FlowRunResponse.from_orm(active_run) if active_run else None
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve active flow run: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索活动流程运行失败: {str(e)}")
 
 
 @router.get(
@@ -119,22 +119,22 @@ async def get_active_flow_run(flow_id: int, db: Session = Depends(get_db)):
     },
 )
 async def get_latest_flow_run(flow_id: int, db: Session = Depends(get_db)):
-    """Get the most recent run for the specified flow"""
+    """获取指定流程的最近运行"""
     try:
         # Verify flow exists
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Get latest flow run
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 获取最新的流程运行
         run_repo = FlowRunRepository(db)
         latest_run = run_repo.get_latest_flow_run(flow_id)
         return FlowRunResponse.from_orm(latest_run) if latest_run else None
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve latest flow run: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索最新流程运行失败: {str(e)}")
 
 
 @router.get(
@@ -146,25 +146,25 @@ async def get_latest_flow_run(flow_id: int, db: Session = Depends(get_db)):
     },
 )
 async def get_flow_run(flow_id: int, run_id: int, db: Session = Depends(get_db)):
-    """Get a specific flow run by ID"""
+    """根据ID获取特定的流程运行"""
     try:
         # Verify flow exists
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Get flow run
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 获取流程运行
         run_repo = FlowRunRepository(db)
         flow_run = run_repo.get_flow_run_by_id(run_id)
         if not flow_run or flow_run.flow_id != flow_id:
-            raise HTTPException(status_code=404, detail="Flow run not found")
-        
+            raise HTTPException(status_code=404, detail="流程运行未找到")
+
         return FlowRunResponse.from_orm(flow_run)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve flow run: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索流程运行失败: {str(e)}")
 
 
 @router.put(
@@ -176,41 +176,41 @@ async def get_flow_run(flow_id: int, run_id: int, db: Session = Depends(get_db))
     },
 )
 async def update_flow_run(
-    flow_id: int, 
-    run_id: int, 
-    request: FlowRunUpdateRequest, 
+    flow_id: int,
+    run_id: int,
+    request: FlowRunUpdateRequest,
     db: Session = Depends(get_db)
 ):
-    """Update an existing flow run"""
+    """更新现有的流程运行"""
     try:
         # Verify flow exists
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Update flow run
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 更新流程运行
         run_repo = FlowRunRepository(db)
-        # First verify the run exists and belongs to this flow
+        # 首先验证运行是否存在并属于此流程
         existing_run = run_repo.get_flow_run_by_id(run_id)
         if not existing_run or existing_run.flow_id != flow_id:
-            raise HTTPException(status_code=404, detail="Flow run not found")
-        
+            raise HTTPException(status_code=404, detail="流程运行未找到")
+
         flow_run = run_repo.update_flow_run(
             run_id=run_id,
             status=request.status,
             results=request.results,
             error_message=request.error_message
         )
-        
+
         if not flow_run:
-            raise HTTPException(status_code=404, detail="Flow run not found")
-        
+            raise HTTPException(status_code=404, detail="流程运行未找到")
+
         return FlowRunResponse.from_orm(flow_run)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update flow run: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新流程运行失败: {str(e)}")
 
 
 @router.delete(
@@ -222,29 +222,29 @@ async def update_flow_run(
     },
 )
 async def delete_flow_run(flow_id: int, run_id: int, db: Session = Depends(get_db)):
-    """Delete a flow run"""
+    """删除流程运行"""
     try:
         # Verify flow exists
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Verify run exists and belongs to this flow
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 验证运行是否存在并属于此流程
         run_repo = FlowRunRepository(db)
         existing_run = run_repo.get_flow_run_by_id(run_id)
         if not existing_run or existing_run.flow_id != flow_id:
-            raise HTTPException(status_code=404, detail="Flow run not found")
-        
+            raise HTTPException(status_code=404, detail="流程运行未找到")
+
         success = run_repo.delete_flow_run(run_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Flow run not found")
-        
-        return {"message": "Flow run deleted successfully"}
+            raise HTTPException(status_code=404, detail="流程运行未找到")
+
+        return {"message": "流程运行删除成功"}
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete flow run: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除流程运行失败: {str(e)}")
 
 
 @router.delete(
@@ -256,23 +256,23 @@ async def delete_flow_run(flow_id: int, run_id: int, db: Session = Depends(get_d
     },
 )
 async def delete_all_flow_runs(flow_id: int, db: Session = Depends(get_db)):
-    """Delete all runs for the specified flow"""
+    """删除指定流程的所有运行"""
     try:
         # Verify flow exists
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Delete all flow runs
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 删除所有流程运行
         run_repo = FlowRunRepository(db)
         deleted_count = run_repo.delete_flow_runs_by_flow_id(flow_id)
-        
-        return {"message": f"Deleted {deleted_count} flow runs successfully"}
+
+        return {"message": f"成功删除 {deleted_count} 个流程运行"}
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete flow runs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除流程运行失败: {str(e)}")
 
 
 @router.get(
@@ -284,20 +284,20 @@ async def delete_all_flow_runs(flow_id: int, db: Session = Depends(get_db)):
     },
 )
 async def get_flow_run_count(flow_id: int, db: Session = Depends(get_db)):
-    """Get the total count of runs for the specified flow"""
+    """获取指定流程的运行总数"""
     try:
         # Verify flow exists
         flow_repo = FlowRepository(db)
         flow = flow_repo.get_flow_by_id(flow_id)
         if not flow:
-            raise HTTPException(status_code=404, detail="Flow not found")
-        
-        # Get run count
+            raise HTTPException(status_code=404, detail="流程未找到")
+
+        # 获取运行计数
         run_repo = FlowRunRepository(db)
         count = run_repo.get_flow_run_count(flow_id)
-        
+
         return {"flow_id": flow_id, "total_runs": count}
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get flow run count: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"获取流程运行计数失败: {str(e)}") 

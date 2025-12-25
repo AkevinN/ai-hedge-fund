@@ -11,7 +11,7 @@ from src.cli.input import (
 
 
 def run_backtest(backtester: BacktestEngine) -> PerformanceMetrics | None:
-    """Run the backtest with graceful KeyboardInterrupt handling."""
+    """运行回测，优雅处理 KeyboardInterrupt。"""
     try:
         performance_metrics = backtester.run_backtest()
         print(f"\n{Fore.GREEN}回测已成功完成！{Style.RESET_ALL}")
@@ -19,13 +19,13 @@ def run_backtest(backtester: BacktestEngine) -> PerformanceMetrics | None:
     except KeyboardInterrupt:
         print(f"\n\n{Fore.YELLOW}回测已被用户中断{Style.RESET_ALL}")
         
-        # Try to show any partial results that were computed
+        # 尝试显示已计算的任何部分结果
         try:
             portfolio_values = backtester.get_portfolio_values()
             if len(portfolio_values) > 1:
                 print(f"{Fore.GREEN}部分结果可用{Style.RESET_ALL}")
                 
-                # Show basic summary from the available portfolio values
+                # 显示可用投资组合值的基本摘要
                 first_value = portfolio_values[0]["Portfolio Value"]
                 last_value = portfolio_values[-1]["Portfolio Value"]
                 total_return = ((last_value - first_value) / first_value) * 100
@@ -39,7 +39,7 @@ def run_backtest(backtester: BacktestEngine) -> PerformanceMetrics | None:
         sys.exit(0)
 
 
-### Run the Backtest #####
+### 运行回测 #####
 if __name__ == "__main__":
     inputs = parse_cli_inputs(
         description="运行回测模拟",
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         include_reasoning_flag=False,
     )
 
-    # Create and run the backtester
+    # 创建并运行回测引擎
     backtester = BacktestEngine(
         agent=run_hedge_fund,
         tickers=inputs.tickers,
@@ -62,5 +62,5 @@ if __name__ == "__main__":
         initial_margin_requirement=inputs.margin_requirement,
     )
 
-    # Run the backtest with graceful exit handling
+    # 运行回测，优雅退出处理
     performance_metrics = run_backtest(backtester)

@@ -17,8 +17,8 @@ from app.backend.services.portfolio import create_portfolio
 
 class BacktestService:
     """
-    Core backtesting service that focuses purely on backtesting logic.
-    Uses a pre-compiled graph and portfolio for trading decisions.
+    核心回测服务，专注于纯回测逻辑。
+    使用预编译的图和投资组合进行交易决策。
     """
 
     def __init__(
@@ -34,17 +34,17 @@ class BacktestService:
         request: dict = {},
     ):
         """
-        Initialize the backtest service.
-        
-        :param graph: Pre-compiled LangGraph graph for trading decisions.
-        :param portfolio: Initial portfolio state.
-        :param tickers: List of tickers to backtest.
-        :param start_date: Start date string (YYYY-MM-DD).
-        :param end_date: End date string (YYYY-MM-DD).
-        :param initial_capital: Starting portfolio cash.
-        :param model_name: Which LLM model name to use.
-        :param model_provider: Which LLM provider.
-        :param request: Request object containing API keys and other metadata.
+        初始化回测服务。
+
+        :param graph: 用于交易决策的预编译LangGraph图。
+        :param portfolio: 初始投资组合状态。
+        :param tickers: 要回测的股票代码列表。
+        :param start_date: 开始日期字符串 (YYYY-MM-DD)。
+        :param end_date: 结束日期字符串 (YYYY-MM-DD)。
+        :param initial_capital: 起始投资组合现金。
+        :param model_name: 要使用的LLM模型名称。
+        :param model_provider: LLM提供商。
+        :param request: 包含API密钥和其他元数据的请求对象。
         """
         self.graph = graph
         self.portfolio = portfolio
@@ -59,8 +59,8 @@ class BacktestService:
 
     def execute_trade(self, ticker: str, action: str, quantity: float, current_price: float) -> int:
         """
-        Execute trades with support for both long and short positions.
-        Returns the actual quantity traded.
+        执行交易，支持多头和空头仓位。
+        返回实际交易数量。
         """
         if quantity <= 0:
             return 0
@@ -202,7 +202,7 @@ class BacktestService:
         return 0
 
     def calculate_portfolio_value(self, current_prices: Dict[str, float]) -> float:
-        """Calculate total portfolio value."""
+        """计算总投资组合价值"""
         total_value = self.portfolio["cash"]
 
         for ticker in self.tickers:
@@ -220,7 +220,7 @@ class BacktestService:
         return total_value
 
     def prefetch_data(self):
-        """Pre-fetch all data needed for the backtest period."""
+        """预取回测期间所需的所有数据"""
         end_date_dt = datetime.strptime(self.end_date, "%Y-%m-%d")
         start_date_dt = end_date_dt - relativedelta(years=1)
         start_date_str = start_date_dt.strftime("%Y-%m-%d")
@@ -233,7 +233,7 @@ class BacktestService:
             get_company_news(ticker, self.end_date, start_date=self.start_date, limit=1000, api_key=api_key)
 
     def _update_performance_metrics(self, performance_metrics: Dict[str, Any]):
-        """Update performance metrics using daily returns."""
+        """使用每日回报更新性能指标"""
         values_df = pd.DataFrame(self.portfolio_values).set_index("Date")
         values_df["Daily Return"] = values_df["Portfolio Value"].pct_change()
         clean_returns = values_df["Daily Return"].dropna()
@@ -281,10 +281,10 @@ class BacktestService:
 
     async def run_backtest_async(self, progress_callback: Optional[Callable] = None) -> Dict[str, Any]:
         """
-        Run the backtest asynchronously with optional progress callbacks.
-        Uses the pre-compiled graph for trading decisions.
+        异步运行回测，可选进度回调。
+        使用预编译图进行交易决策。
         """
-        # Pre-fetch all data at the start
+        # 在开始时预取所有数据
         self.prefetch_data()
 
         dates = pd.date_range(self.start_date, self.end_date, freq="B")
@@ -381,11 +381,11 @@ class BacktestService:
                     analyst_signals = {}
                     
             except Exception as e:
-                print(f"Error running graph for {current_date_str}: {e}")
+                print(f"运行图时出错 {current_date_str}: {e}")
                 decisions = {}
                 analyst_signals = {}
 
-            # Execute trades based on decisions
+            # 根据决策执行交易
             executed_trades = {}
             for ticker in self.tickers:
                 decision = decisions.get(ticker, {"action": "hold", "quantity": 0})
@@ -510,10 +510,10 @@ class BacktestService:
 
     def run_backtest_sync(self) -> Dict[str, Any]:
         """
-        Run the backtest synchronously.
-        This version can be used by the CLI.
+        同步运行回测。
+        此版本可用于CLI。
         """
-        # Use asyncio to run the async version
+        # 使用asyncio运行异步版本
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
@@ -522,7 +522,7 @@ class BacktestService:
             loop.close()
 
     def analyze_performance(self) -> pd.DataFrame:
-        """Analyze performance and return DataFrame with metrics."""
+        """分析性能并返回带指标的DataFrame"""
         if not self.portfolio_values:
             return pd.DataFrame()
 

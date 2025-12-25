@@ -44,7 +44,7 @@ def news_sentiment_agent(state: AgentState, agent_id: str = "news_sentiment_agen
     sentiment_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching company news")
+        progress.update_status(agent_id, ticker, "获取公司新闻")
         company_news = get_company_news(
             ticker=ticker,
             end_date=end_date,
@@ -95,7 +95,7 @@ def news_sentiment_agent(state: AgentState, agent_id: str = "news_sentiment_agen
             sentiment = pd.Series([n.sentiment for n in company_news]).dropna()
             news_signals = np.where(sentiment == "negative","bearish", np.where(sentiment == "positive", "bullish", "neutral")).tolist()
 
-        progress.update_status(agent_id, ticker, "Aggregating signals")
+        progress.update_status(agent_id, ticker, "汇总信号")
 
         # Calculate the sentiment signals
         bullish_signals = news_signals.count("bullish")

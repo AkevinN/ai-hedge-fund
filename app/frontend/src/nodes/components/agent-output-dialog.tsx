@@ -30,7 +30,7 @@ export function AgentOutputDialog({
 }: AgentOutputDialogProps) {
   const { getAgentNodeDataForFlow } = useNodeContext();
   
-  // Use the passed flowId instead of getting it from flow context
+  // 使用传入的 flowId 而非从流程上下文获取
   const agentNodeData = getAgentNodeDataForFlow(flowId);
   const nodeData = agentNodeData[nodeId] || { 
     status: 'IDLE', 
@@ -47,44 +47,44 @@ export function AgentOutputDialog({
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null);
   const initialFocusRef = useRef<HTMLDivElement>(null);
 
-  // Collect all analysis from all messages into a single analysis dictionary
+  // 将所有消息中的分析收集到单个分析字典中
   const allAnalysis = messages
-    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) // Sort by timestamp
+    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) // 按时间戳排序
     .reduce<Record<string, string>>((acc, msg) => {
-      // Add analysis from this message to our accumulated analysis
+      // 将此消息的分析添加到累积分析中
       if (msg.analysis && Object.keys(msg.analysis).length > 0) {
-        // Filter out null values before adding to our accumulated decisions
+        // 在添加到累积决策之前过滤掉空值
         const validDecisions = Object.entries(msg.analysis)
           .filter(([_, value]) => value !== null && value !== undefined)
           .reduce((obj, [key, value]) => {
             obj[key] = value;
             return obj;
           }, {} as Record<string, string>);
-        
+
         if (Object.keys(validDecisions).length > 0) {
-          // Combine with accumulated decisions, newer messages overwrite older ones for the same ticker
+          // 与累积决策合并，对于相同股票代码，新消息覆盖旧消息
           return { ...acc, ...validDecisions };
         }
       }
       return acc;
     }, {});
 
-  // Get all unique tickers that have decisions
+  // 获取所有具有决策的唯一股票代码
   const tickersWithDecisions = Object.keys(allAnalysis);
 
-  // Reset selected ticker when node changes
+  // 节点更改时重置选定的股票代码
   useEffect(() => {
     setSelectedTicker(null);
   }, [nodeId]);
 
-  // If no ticker is selected but we have decisions, select the first one
+  // 如果没有选择股票代码但我们有决策，则选择第一个
   useEffect(() => {
     if (tickersWithDecisions.length > 0 && (!selectedTicker || !tickersWithDecisions.includes(selectedTicker))) {
       setSelectedTicker(tickersWithDecisions[0]);
     }
   }, [tickersWithDecisions, selectedTicker]);
 
-  // Get the selected decision text
+  // 获取选定的决策文本
   const selectedDecision = selectedTicker && allAnalysis[selectedTicker] ? allAnalysis[selectedTicker] : null;
 
   const copyToClipboard = () => {
@@ -110,7 +110,7 @@ export function AgentOutputDialog({
       <DialogTrigger asChild>
         <div className="border-t border-border p-3 flex justify-end items-center cursor-pointer hover:bg-accent/50" onClick={() => onOpenChange(true)}>
           <div className="flex items-center gap-1">
-            <div className="text-subtitle text-muted-foreground">Output</div>
+            <div className="text-subtitle text-muted-foreground">输出</div>
             <AlignJustify className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
         </div>
@@ -123,11 +123,11 @@ export function AgentOutputDialog({
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid grid-cols-2 gap-6 pt-4" ref={initialFocusRef} tabIndex={-1}>
-          {/* Activity Log Section */}
+          {/* 活动日志部分 */}
           <div>
-            <h3 className="font-medium mb-3 text-primary">Log</h3>
+            <h3 className="font-medium mb-3 text-primary">日志</h3>
             <div className="h-[400px] overflow-y-auto border border-border rounded-lg p-3">
               {messages.length > 0 ? (
                 <div className="p-3 space-y-3">
@@ -147,21 +147,21 @@ export function AgentOutputDialog({
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No activity available
+                  暂无活动
                 </div>
               )}
             </div>
           </div>
-          
-          {/* Analysis Section */}
+
+          {/* 分析部分 */}
           <div>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-medium text-primary">Analysis</h3>
+              <h3 className="font-medium text-primary">分析</h3>
               <div className="flex items-center gap-2">
-                {/* Ticker selector */}
+                {/* 股票代码选择器 */}
                 {tickersWithDecisions.length > 0 && (
                   <div className="flex items-center gap-1">
-                    <span className="text-xs text-muted-foreground font-medium">Ticker:</span>
+                    <span className="text-xs text-muted-foreground font-medium">股票:</span>
                     <select 
                       className="text-xs p-1 rounded bg-background border border-border cursor-pointer"
                       value={selectedTicker || ''}
@@ -183,15 +183,15 @@ export function AgentOutputDialog({
                 <div className="p-3 rounded-lg text-sm leading-relaxed">
                   {selectedTicker && (
                     <div className="mb-3 flex justify-between items-center">
-                      <div className=" text-muted-foreground font-medium">Summary for {selectedTicker}</div>
+                      <div className=" text-muted-foreground font-medium">{selectedTicker} 摘要</div>
                       {selectedDecision && (
-                        <button 
+                        <button
                           onClick={copyToClipboard}
                           className="flex items-center gap-1.5 text-xs p-1.5 rounded hover:bg-accent transition-colors text-muted-foreground"
-                          title="Copy to clipboard"
+                          title="复制到剪贴板"
                         >
                           <Copy className="h-3.5 w-3.5 " />
-                          <span className="font-medium">{copySuccess ? 'Copied!' : 'Copy'}</span>
+                          <span className="font-medium">{copySuccess ? '已复制!' : '复制'}</span>
                         </button>
                       )}
                     </div>
@@ -199,9 +199,9 @@ export function AgentOutputDialog({
                   {selectedDecision ? (
                     (() => {
                       const { isJson, formattedContent } = formatContent(selectedDecision);
-                      
+
                       if (isJson) {
-                        // Use react-syntax-highlighter for better JSON rendering
+                        // 使用 react-syntax-highlighter 获得更好的 JSON 渲染
                         return (
                           <div className="overflow-auto rounded-md text-xs">
                             <SyntaxHighlighter
@@ -225,7 +225,7 @@ export function AgentOutputDialog({
                           </div>
                         );
                       } else {
-                        // Display as regular text paragraphs
+                        // 显示为常规文本段落
                         return (
                           (formattedContent as string[]).map((paragraph, idx) => (
                             <p key={idx} className="mb-3 last:mb-0">{paragraph}</p>
@@ -236,30 +236,30 @@ export function AgentOutputDialog({
                   ) : nodeStatus === 'IN_PROGRESS' ? (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
                       <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                      Analysis in progress...
+                      分析进行中...
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
-                      No analysis available for {selectedTicker}
+                      {selectedTicker} 暂无分析结果
                     </div>
                   )}
                 </div>
               ) : nodeStatus === 'IN_PROGRESS' ? (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  Analysis in progress...
+                  分析进行中...
                 </div>
               ) : nodeStatus === 'COMPLETE' ? (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  Analysis completed with no results
+                  分析已完成，无结果
                 </div>
               ) : nodeStatus === 'ERROR' ? (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  Analysis failed
+                  分析失败
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No analysis available
+                  暂无分析结果
                 </div>
               )}
             </div>

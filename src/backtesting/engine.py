@@ -25,11 +25,11 @@ from src.tools.api import (
 
 
 class BacktestEngine:
-    """Coordinates the backtest loop using the new components.
+    """协调回测循环，使用新的组件。
 
-    This implementation mirrors the semantics of src/backtester.py while
-    avoiding any changes to that file. It orchestrates agent decisions,
-    trade execution, valuation, exposures and performance metrics.
+    此实现镜像了 src/backtester.py 的语义，同时
+    避免对该文件进行任何更改。它编排了 agent 决策、
+    交易执行、估值、敞口和性能指标。
     """
 
     def __init__(
@@ -64,7 +64,7 @@ class BacktestEngine:
         self._perf = PerformanceMetricsCalculator()
         self._results = OutputBuilder(initial_capital=self._initial_capital)
 
-        # Benchmark calculator
+        # 基准计算器
         self._benchmark = BenchmarkCalculator()
 
         self._portfolio_values: list[PortfolioValuePoint] = []
@@ -89,7 +89,7 @@ class BacktestEngine:
             get_insider_trades(ticker, self._end_date, start_date=self._start_date, limit=1000)
             get_company_news(ticker, self._end_date, start_date=self._start_date, limit=1000)
         
-        # Preload data for SPY for benchmark comparison
+        # 预加载 SPY 数据用于基准比较
         get_prices("SPY", self._start_date, self._end_date)
 
 
@@ -163,7 +163,7 @@ class BacktestEngine:
             }
             self._portfolio_values.append(point)
             
-            # Build daily rows (stateless usage)
+            # 构建每日行（无状态使用）
             rows = self._results.build_day_rows(
                 date_str=current_date_str,
                 tickers=self._tickers,
@@ -175,12 +175,12 @@ class BacktestEngine:
                 total_value=total_value,
                 benchmark_return_pct=self._benchmark.get_return_pct("SPY", self._start_date, current_date_str),
             )
-            # Prepend today's rows to historical rows so latest day is on top
+            # 将今天的行前置到历史行，使最新日期在顶部
             self._table_rows = rows + self._table_rows
-            # Print full history with latest day first (matches backtester.py behavior)
+            # 打印完整历史，最新日期在前（匹配 backtester.py 的行为）
             self._results.print_rows(self._table_rows)
 
-            # Update performance metrics after printing (match original timing)
+            # 打印后更新性能指标（匹配原始时序）
             if len(self._portfolio_values) > 3:
                 computed = self._perf.compute_metrics(self._portfolio_values)
                 if computed:

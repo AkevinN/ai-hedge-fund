@@ -41,13 +41,13 @@ def main() -> int:
 
     tickers = [t.strip() for t in args.tickers.split(",")] if args.tickers else []
 
-    # Analysts selection is simplified; no interactive prompts here
+    # 分析师选择简化；此处没有交互式提示
     if args.analysts_all:
         selected_analysts = [a[1] for a in ANALYST_ORDER]
     elif args.analysts:
         selected_analysts = [a.strip() for a in args.analysts.split(",") if a.strip()]
     else:
-        # Interactive analyst selection (same as legacy backtester)
+        # 交互式分析师选择（与旧版回测器相同）
         choices = questionary.checkbox(
             "使用空格键选择/取消选择分析师",
             choices=[questionary.Choice(display, value=value) for display, value in ANALYST_ORDER],
@@ -71,7 +71,7 @@ def main() -> int:
             f"{', '.join(Fore.GREEN + choice.title().replace('_', ' ') + Style.RESET_ALL for choice in choices)}\n"
         )
 
-    # Model selection simplified: default to first ordered model or Ollama flag
+    # 模型选择简化：默认为第一个有序模型或 Ollama 标志
     if args.ollama:
         print(f"{Fore.CYAN}使用 Ollama 进行本地 LLM 推理{Style.RESET_ALL}")
         model_name = questionary.select(
@@ -143,7 +143,7 @@ def main() -> int:
     metrics = engine.run_backtest()
     values = engine.get_portfolio_values()
 
-    # Minimal terminal output (no plots)
+    # 最小终端输出（无图表）
     if values:
         print(f"\n{Fore.WHITE}{Style.BRIGHT}引擎运行完成{Style.RESET_ALL}")
         last_value = values[-1]["Portfolio Value"]

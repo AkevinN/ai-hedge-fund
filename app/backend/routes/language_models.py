@@ -7,7 +7,7 @@ from src.llm.models import get_models_list
 
 router = APIRouter(prefix="/language-models")
 
-# Initialize Ollama service
+# 初始化Ollama服务
 ollama_service = OllamaService()
 
 @router.get(
@@ -18,18 +18,18 @@ ollama_service = OllamaService()
     },
 )
 async def get_language_models():
-    """Get the list of available cloud-based and Ollama language models."""
+    """获取可用的云端和Ollama语言模型列表"""
     try:
-        # Start with cloud models
+        # 从云端模型开始
         models = get_models_list()
-        
-        # Add available Ollama models (handles all checking internally)
+
+        # 添加可用的Ollama模型（内部处理所有检查）
         ollama_models = await ollama_service.get_available_models()
         models.extend(ollama_models)
-        
+
         return {"models": models}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve models: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"检索模型失败: {str(e)}")
 
 @router.get(
     path="/providers",
@@ -39,11 +39,11 @@ async def get_language_models():
     },
 )
 async def get_language_model_providers():
-    """Get the list of available model providers with their models grouped."""
+    """获取可用模型提供商列表及其模型分组"""
     try:
         models = get_models_list()
-        
-        # Group models by provider
+
+        # 按提供商分组模型
         providers = {}
         for model in models:
             provider_name = model["provider"]
@@ -56,7 +56,7 @@ async def get_language_model_providers():
                 "display_name": model["display_name"],
                 "model_name": model["model_name"]
             })
-        
+
         return {"providers": list(providers.values())}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve providers: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"检索提供商失败: {str(e)}") 

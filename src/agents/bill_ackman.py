@@ -18,9 +18,9 @@ class BillAckmanSignal(BaseModel):
 
 def bill_ackman_agent(state: AgentState, agent_id: str = "bill_ackman_agent"):
     """
-    Analyzes stocks using Bill Ackman's investing principles and LLM reasoning.
-    Fetches multiple periods of data for a more robust long-term view.
-    Incorporates brand/competitive advantage, activism potential, and other key factors.
+    使用Bill Ackman的投资原则和LLM推理分析股票。
+    获取多个时期的数据以获得更全面的长期视图。
+    整合品牌/竞争优势、激进主义潜力和其他关键因素。
     """
     data = state["data"]
     end_date = data["end_date"]
@@ -30,11 +30,11 @@ def bill_ackman_agent(state: AgentState, agent_id: str = "bill_ackman_agent"):
     ackman_analysis = {}
     
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="annual", limit=5, api_key=api_key)
-        
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
-        # Request multiple periods of data (annual or TTM) for a more robust long-term view.
+
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
+        # 请求多个时期的数据（年度或TTM）以获得更全面的长期视图。
         financial_line_items = search_line_items(
             ticker,
             [
@@ -55,19 +55,19 @@ def bill_ackman_agent(state: AgentState, agent_id: str = "bill_ackman_agent"):
             api_key=api_key,
         )
         
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
-        
-        progress.update_status(agent_id, ticker, "Analyzing business quality")
+
+        progress.update_status(agent_id, ticker, "分析业务质量")
         quality_analysis = analyze_business_quality(metrics, financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Analyzing balance sheet and capital structure")
+
+        progress.update_status(agent_id, ticker, "分析资产负债表和资本结构")
         balance_sheet_analysis = analyze_financial_discipline(metrics, financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Analyzing activism potential")
+
+        progress.update_status(agent_id, ticker, "分析激进主义潜力")
         activism_analysis = analyze_activism_potential(financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Calculating intrinsic value & margin of safety")
+
+        progress.update_status(agent_id, ticker, "计算内在价值和安全边际")
         valuation_analysis = analyze_valuation(financial_line_items, market_cap)
         
         # Combine partial scores or signals
@@ -97,36 +97,36 @@ def bill_ackman_agent(state: AgentState, agent_id: str = "bill_ackman_agent"):
             "valuation_analysis": valuation_analysis
         }
         
-        progress.update_status(agent_id, ticker, "Generating Bill Ackman analysis")
+        progress.update_status(agent_id, ticker, "生成Bill Ackman分析")
         ackman_output = generate_ackman_output(
-            ticker=ticker, 
+            ticker=ticker,
             analysis_data=analysis_data,
             state=state,
             agent_id=agent_id,
         )
-        
+
         ackman_analysis[ticker] = {
             "signal": ackman_output.signal,
             "confidence": ackman_output.confidence,
             "reasoning": ackman_output.reasoning
         }
-        
-        progress.update_status(agent_id, ticker, "Done", analysis=ackman_output.reasoning)
-    
-    # Wrap results in a single message for the chain
+
+        progress.update_status(agent_id, ticker, "完成", analysis=ackman_output.reasoning)
+
+    # 将结果包装在单个消息中供链使用
     message = HumanMessage(
         content=json.dumps(ackman_analysis),
         name=agent_id
     )
-    
-    # Show reasoning if requested
+
+    # 如果需要则显示推理过程
     if state["metadata"]["show_reasoning"]:
         show_agent_reasoning(ackman_analysis, "Bill Ackman Agent")
-    
-    # Add signals to the overall state
+
+    # 将信号添加到整体状态
     state["data"]["analyst_signals"][agent_id] = ackman_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {
         "messages": [message],

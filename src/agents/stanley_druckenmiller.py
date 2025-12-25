@@ -25,13 +25,13 @@ class StanleyDruckenmillerSignal(BaseModel):
 
 def stanley_druckenmiller_agent(state: AgentState, agent_id: str = "stanley_druckenmiller_agent"):
     """
-    Analyzes stocks using Stanley Druckenmiller's investing principles:
-      - Seeking asymmetric risk-reward opportunities
-      - Emphasizing growth, momentum, and sentiment
-      - Willing to be aggressive if conditions are favorable
-      - Focus on preserving capital by avoiding high-risk, low-reward bets
+    使用Stanley Druckenmiller的投资原则分析股票：
+      - 寻求不对称的风险回报机会
+      - 强调增长、动量和情绪
+      - 如果条件有利则愿意激进
+      - 通过避免高风险低回报的赌注来专注于保护资本
 
-    Returns a bullish/bearish/neutral signal with confidence and reasoning.
+    返回看涨/看跌/中性信号，包含置信度和推理。
     """
     data = state["data"]
     start_date = data["start_date"]
@@ -42,11 +42,11 @@ def stanley_druckenmiller_agent(state: AgentState, agent_id: str = "stanley_druc
     druck_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="annual", limit=5, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
-        # Include relevant line items for Stan Druckenmiller's approach:
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
+        # Stan Druckenmiller方法的相关项目：
         #   - Growth & momentum: revenue, EPS, operating_income, ...
         #   - Valuation: net_income, free_cash_flow, ebit, ebitda
         #   - Leverage: total_debt, shareholders_equity
@@ -75,31 +75,31 @@ def stanley_druckenmiller_agent(state: AgentState, agent_id: str = "stanley_druc
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching insider trades")
+        progress.update_status(agent_id, ticker, "获取内部人交易")
         insider_trades = get_insider_trades(ticker, end_date, limit=50, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching company news")
+        progress.update_status(agent_id, ticker, "获取公司新闻")
         company_news = get_company_news(ticker, end_date, limit=50, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching recent price data for momentum")
+        progress.update_status(agent_id, ticker, "获取最近价格数据以分析动量")
         prices = get_prices(ticker, start_date=start_date, end_date=end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Analyzing growth & momentum")
+        progress.update_status(agent_id, ticker, "分析增长和动量")
         growth_momentum_analysis = analyze_growth_and_momentum(financial_line_items, prices)
 
-        progress.update_status(agent_id, ticker, "Analyzing sentiment")
+        progress.update_status(agent_id, ticker, "分析情绪")
         sentiment_analysis = analyze_sentiment(company_news)
 
-        progress.update_status(agent_id, ticker, "Analyzing insider activity")
+        progress.update_status(agent_id, ticker, "分析内部人活动")
         insider_activity = analyze_insider_activity(insider_trades)
 
-        progress.update_status(agent_id, ticker, "Analyzing risk-reward")
+        progress.update_status(agent_id, ticker, "分析风险回报")
         risk_reward_analysis = analyze_risk_reward(financial_line_items, prices)
 
-        progress.update_status(agent_id, ticker, "Performing Druckenmiller-style valuation")
+        progress.update_status(agent_id, ticker, "执行Druckenmiller风格估值")
         valuation_analysis = analyze_druckenmiller_valuation(financial_line_items, market_cap)
 
         # Combine partial scores with weights typical for Druckenmiller:
@@ -134,7 +134,7 @@ def stanley_druckenmiller_agent(state: AgentState, agent_id: str = "stanley_druc
             "valuation_analysis": valuation_analysis,
         }
 
-        progress.update_status(agent_id, ticker, "Generating Stanley Druckenmiller analysis")
+        progress.update_status(agent_id, ticker, "生成Stanley Druckenmiller分析")
         druck_output = generate_druckenmiller_output(
             ticker=ticker,
             analysis_data=analysis_data,
@@ -148,9 +148,9 @@ def stanley_druckenmiller_agent(state: AgentState, agent_id: str = "stanley_druc
             "reasoning": druck_output.reasoning,
         }
 
-        progress.update_status(agent_id, ticker, "Done", analysis=druck_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=druck_output.reasoning)
 
-    # Wrap results in a single message
+    # 将结果包装在单个消息中
     message = HumanMessage(content=json.dumps(druck_analysis), name=agent_id)
 
     if state["metadata"].get("show_reasoning"):
@@ -158,7 +158,7 @@ def stanley_druckenmiller_agent(state: AgentState, agent_id: str = "stanley_druc
 
     state["data"]["analyst_signals"][agent_id] = druck_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
     
     return {"messages": [message], "data": state["data"]}
 

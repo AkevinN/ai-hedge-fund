@@ -1,4 +1,4 @@
-"""Utilities for working with Ollama models"""
+"""使用 Ollama 模型的工具"""
 
 import platform
 import subprocess
@@ -10,12 +10,12 @@ from colorama import Fore, Style
 import os
 from . import docker
 
-# Constants
+# 常量
 DEFAULT_OLLAMA_SERVER_URL = "http://localhost:11434"
 
 
 def _get_ollama_base_url() -> str:
-    """Return the configured Ollama base URL, trimming any trailing slash."""
+    """返回配置的 Ollama 基础 URL，去除任何尾随斜杠"""
     url = os.environ.get("OLLAMA_BASE_URL", DEFAULT_OLLAMA_SERVER_URL)
     if not url:
         url = DEFAULT_OLLAMA_SERVER_URL
@@ -23,7 +23,7 @@ def _get_ollama_base_url() -> str:
 
 
 def _get_ollama_endpoint(path: str) -> str:
-    """Build a full Ollama API endpoint from the configured base URL."""
+    """从配置的基础 URL 构建完整的 Ollama API 端点"""
     base = _get_ollama_base_url()
     if not path.startswith("/"):
         path = f"/{path}"
@@ -31,14 +31,14 @@ def _get_ollama_endpoint(path: str) -> str:
 
 
 OLLAMA_DOWNLOAD_URL = {"darwin": "https://ollama.com/download/darwin", "windows": "https://ollama.com/download/windows", "linux": "https://ollama.com/download/linux"}  # macOS  # Windows  # Linux
-INSTALLATION_INSTRUCTIONS = {"darwin": "curl -fsSL https://ollama.com/install.sh | sh", "windows": "# Download from https://ollama.com/download/windows and run the installer", "linux": "curl -fsSL https://ollama.com/install.sh | sh"}
+INSTALLATION_INSTRUCTIONS = {"darwin": "curl -fsSL https://ollama.com/install.sh | sh", "windows": "# 从 https://ollama.com/download/windows 下载并运行安装程序", "linux": "curl -fsSL https://ollama.com/install.sh | sh"}
 
 
 def is_ollama_installed() -> bool:
-    """Check if Ollama is installed on the system."""
+    """检查系统是否安装了 Ollama"""
     system = platform.system().lower()
 
-    if system == "darwin" or system == "linux":  # macOS or Linux
+    if system == "darwin" or system == "linux":  # macOS 或 Linux
         try:
             result = subprocess.run(["which", "ollama"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             return result.returncode == 0
@@ -51,11 +51,11 @@ def is_ollama_installed() -> bool:
         except Exception:
             return False
     else:
-        return False  # Unsupported OS
+        return False  # 不支持的操作系统
 
 
 def is_ollama_server_running() -> bool:
-    """Check if the Ollama server is running."""
+    """检查 Ollama 服务器是否正在运行"""
     endpoint = _get_ollama_endpoint("/api/tags")
     try:
         response = requests.get(endpoint, timeout=2)
@@ -65,7 +65,7 @@ def is_ollama_server_running() -> bool:
 
 
 def get_locally_available_models() -> List[str]:
-    """Get a list of models that are already downloaded locally."""
+    """获取已在本地下载的模型列表"""
     if not is_ollama_server_running():
         return []
 
@@ -81,7 +81,7 @@ def get_locally_available_models() -> List[str]:
 
 
 def start_ollama_server() -> bool:
-    """Start the Ollama server if it's not already running."""
+    """启动 Ollama 服务器（如果尚未运行）"""
     if is_ollama_server_running():
         print(f"{Fore.GREEN}Ollama 服务器已在运行{Style.RESET_ALL}")
         return True
@@ -89,7 +89,7 @@ def start_ollama_server() -> bool:
     system = platform.system().lower()
 
     try:
-        if system == "darwin" or system == "linux":  # macOS or Linux
+        if system == "darwin" or system == "linux":  # macOS 或 Linux
             subprocess.Popen(["ollama", "serve"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         elif system == "windows":  # Windows
             subprocess.Popen(["ollama", "serve"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -97,8 +97,8 @@ def start_ollama_server() -> bool:
             print(f"{Fore.RED}不支持的操作系统: {system}{Style.RESET_ALL}")
             return False
 
-        # Wait for server to start
-        for _ in range(10):  # Try for 10 seconds
+        # 等待服务器启动
+        for _ in range(10):  # 尝试 10 秒
             if is_ollama_server_running():
                 print(f"{Fore.GREEN}Ollama 服务器启动成功{Style.RESET_ALL}")
                 return True
@@ -112,7 +112,7 @@ def start_ollama_server() -> bool:
 
 
 def install_ollama() -> bool:
-    """Install Ollama on the system."""
+    """在系统上安装 Ollama"""
     system = platform.system().lower()
     if system not in OLLAMA_DOWNLOAD_URL:
         print(f"{Fore.RED}不支持自动安装的操作系统: {system}{Style.RESET_ALL}")
@@ -131,9 +131,9 @@ def install_ollama() -> bool:
                 print(f"{Fore.YELLOW}请下载并安装应用程序，然后重新启动此程序{Style.RESET_ALL}")
                 print(f"{Fore.CYAN}安装后，您可能需要先打开一次 Ollama 应用程序才能继续{Style.RESET_ALL}")
 
-                # Ask if they want to try continuing after installation
+                # 询问他们是否要在安装后继续
                 if questionary.confirm("您是否已安装 Ollama 应用程序并至少打开过一次?", default=False).ask():
-                    # Check if it's now installed
+                    # 检查现在是否已安装
                     if is_ollama_installed() and start_ollama_server():
                         print(f"{Fore.GREEN}Ollama 已正确安装并正在运行！{Style.RESET_ALL}")
                         return True
@@ -145,7 +145,7 @@ def install_ollama() -> bool:
                 print(f"{Fore.RED}无法打开浏览器: {e}{Style.RESET_ALL}")
                 return False
         else:
-            # Only offer command-line installation as a fallback for advanced users
+            # 仅为高级用户提供命令行安装作为备用方案
             if questionary.confirm("是否要尝试命令行安装? (适合高级用户)", default=False).ask():
                 print(f"{Fore.YELLOW}正在尝试命令行安装...{Style.RESET_ALL}")
                 try:
@@ -205,7 +205,7 @@ def install_ollama() -> bool:
 
 
 def download_model(model_name: str) -> bool:
-    """Download an Ollama model."""
+    """下载 Ollama 模型"""
     if not is_ollama_server_running():
         if not start_ollama_server():
             return False
@@ -215,21 +215,21 @@ def download_model(model_name: str) -> bool:
     print(f"{Fore.CYAN}下载正在后台进行，请耐心等待...{Style.RESET_ALL}")
 
     try:
-        # Use the Ollama CLI to download the model
+        # 使用 Ollama CLI 下载模型
         process = subprocess.Popen(
             ["ollama", "pull", model_name],
             stdout=subprocess.PIPE, 
             stderr=subprocess.STDOUT,  # Redirect stderr to stdout to capture all output
             text=True,
             bufsize=1,  # Line buffered
-            encoding='utf-8',  # Explicitly use UTF-8 encoding
-            errors='replace'   # Replace any characters that cannot be decoded
+            encoding='utf-8',  # 显式使用 UTF-8 编码
+            errors='replace'   # 替换无法解码的字符
         )
-        
-        # Show some progress to the user
+
+        # 向用户显示一些进度
         print(f"{Fore.CYAN}下载进度:{Style.RESET_ALL}")
 
-        # For tracking progress
+        # 用于跟踪进度
         last_percentage = 0
         last_phase = ""
         bar_length = 40
@@ -240,16 +240,16 @@ def download_model(model_name: str) -> bool:
                 break
             if output:
                 output = output.strip()
-                # Try to extract percentage information using a more lenient approach
+                # 尝试使用更宽松的方法提取百分比信息
                 percentage = None
                 current_phase = None
 
-                # Example patterns in Ollama output:
+                # Ollama 输出中的示例模式:
                 # "downloading: 23.45 MB / 42.19 MB [================>-------------] 55.59%"
                 # "downloading model: 76%"
                 # "pulling manifest: 100%"
 
-                # Check for percentage in the output
+                # 检查输出中的百分比
                 import re
 
                 percentage_match = re.search(r"(\d+(\.\d+)?)%", output)
@@ -259,42 +259,42 @@ def download_model(model_name: str) -> bool:
                     except ValueError:
                         percentage = None
 
-                # Try to determine the current phase (downloading, extracting, etc.)
+                # 尝试确定当前阶段（下载、提取等）
                 phase_match = re.search(r"^([a-zA-Z\s]+):", output)
                 if phase_match:
                     current_phase = phase_match.group(1).strip()
 
-                # If we found a percentage, display a progress bar
+                # 如果找到百分比，显示进度条
                 if percentage is not None:
-                    # Only update if there's a significant change (avoid flickering)
+                    # 仅在有显著变化时更新（避免闪烁）
                     if abs(percentage - last_percentage) >= 1 or (current_phase and current_phase != last_phase):
                         last_percentage = percentage
                         if current_phase:
                             last_phase = current_phase
 
-                        # Create a progress bar
+                        # 创建进度条
                         filled_length = int(bar_length * percentage / 100)
                         bar = "█" * filled_length + "░" * (bar_length - filled_length)
 
-                        # Build the status line with the phase if available
+                        # 如果可用，使用阶段构建状态行
                         phase_display = f"{Fore.CYAN}{last_phase.capitalize()}{Style.RESET_ALL}: " if last_phase else ""
                         status_line = f"\r{phase_display}{Fore.GREEN}{bar}{Style.RESET_ALL} {Fore.YELLOW}{percentage:.1f}%{Style.RESET_ALL}"
 
-                        # Print the status line without a newline to update in place
+                        # 打印状态行而不换行以原地更新
                         print(status_line, end="", flush=True)
                 else:
-                    # If we couldn't extract a percentage but have identifiable output
+                    # 如果无法提取百分比但有可识别的输出
                     if "download" in output.lower() or "extract" in output.lower() or "pulling" in output.lower():
-                        # Don't print a newline for percentage updates
+                        # 对于百分比更新不打印换行符
                         if "%" in output:
                             print(f"\r{Fore.GREEN}{output}{Style.RESET_ALL}", end="", flush=True)
                         else:
                             print(f"{Fore.GREEN}{output}{Style.RESET_ALL}")
 
-        # Wait for the process to finish
+        # 等待进程完成
         return_code = process.wait()
 
-        # Ensure we print a newline after the progress bar
+        # 确保在进度条后打印换行符
         print()
 
         if return_code == 0:
@@ -309,75 +309,75 @@ def download_model(model_name: str) -> bool:
 
 
 def ensure_ollama_and_model(model_name: str) -> bool:
-    """Ensure Ollama is installed, running, and the requested model is available."""
+    """确保 Ollama 已安装、正在运行且请求的模型可用"""
     ollama_url = _get_ollama_base_url()
     env_override = os.environ.get("OLLAMA_BASE_URL")
 
-    # If an explicit base URL is provided (including Docker defaults), use the remote workflow
+    # 如果提供了显式基础 URL（包括 Docker 默认值），使用远程工作流
     if env_override or ollama_url.startswith("http://ollama:") or ollama_url.startswith("http://host.docker.internal:"):
         return docker.ensure_ollama_and_model(model_name, ollama_url)
 
-    # Regular flow for environments that rely on the local Ollama install
-    # Check if Ollama is installed
+    # 依赖本地 Ollama 安装的环境的常规流程
+    # 检查是否安装了 Ollama
     if not is_ollama_installed():
         print(f"{Fore.YELLOW}您的系统未安装 Ollama{Style.RESET_ALL}")
-        
-        # Ask if they want to install it
+
+        # 询问他们是否要安装它
         if questionary.confirm("是否要安装 Ollama?").ask():
             if not install_ollama():
                 return False
         else:
             print(f"{Fore.RED}使用本地模型需要 Ollama{Style.RESET_ALL}")
             return False
-    
-    # Make sure the server is running
+
+    # 确保服务器正在运行
     if not is_ollama_server_running():
         print(f"{Fore.YELLOW}正在启动 Ollama 服务器...{Style.RESET_ALL}")
         if not start_ollama_server():
             return False
-    
-    # Check if the model is already downloaded
+
+    # 检查模型是否已下载
     available_models = get_locally_available_models()
     if model_name not in available_models:
         print(f"{Fore.YELLOW}模型 {model_name} 本地不可用{Style.RESET_ALL}")
-        
-        # Ask if they want to download it
+
+        # 询问他们是否要下载它
         model_size_info = ""
         if "70b" in model_name:
             model_size_info = " 这是一个大型模型 (可能有几GB)，下载可能需要较长时间"
         elif "34b" in model_name or "8x7b" in model_name:
             model_size_info = " 这是一个中型模型 (1-2 GB)，下载可能需要几分钟"
-        
+
         if questionary.confirm(f"是否要下载模型 {model_name}?{model_size_info} 下载将在后台进行").ask():
             return download_model(model_name)
         else:
             print(f"{Fore.RED}需要该模型才能继续{Style.RESET_ALL}")
             return False
-    
+
     return True
 
 
 def delete_model(model_name: str) -> bool:
-    """Delete a locally downloaded Ollama model."""
-    # Check if we're running in Docker
+    """删除本地下载的 Ollama 模型"""
+    # 检查是否在 Docker 中运行
     in_docker = os.environ.get("OLLAMA_BASE_URL", "").startswith("http://ollama:") or os.environ.get("OLLAMA_BASE_URL", "").startswith("http://host.docker.internal:")
-    
-    # In Docker environment, delegate to docker module
+
+    # 在 Docker 环境中，委托给 docker 模块
     if in_docker:
         ollama_url = os.environ.get("OLLAMA_BASE_URL", "http://ollama:11434")
         return docker.delete_model(model_name, ollama_url)
-        
-    # Non-Docker environment
+
+    # 非 Docker 环境
     if not is_ollama_server_running():
         if not start_ollama_server():
             return False
-    
+
     print(f"{Fore.YELLOW}正在删除模型 {model_name}...{Style.RESET_ALL}")
-    
+
     try:
-        # Use the Ollama CLI to delete the model
+        # 使用 Ollama CLI 删除模型
         process = subprocess.run(["ollama", "rm", model_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        
+
         if process.returncode == 0:
             print(f"{Fore.GREEN}模型 {model_name} 删除成功{Style.RESET_ALL}")
             return True
@@ -389,7 +389,7 @@ def delete_model(model_name: str) -> bool:
         return False
 
 
-# Add this at the end of the file for command-line usage
+# 在文件末尾添加此部分用于命令行使用
 if __name__ == "__main__":
     import sys
     import argparse

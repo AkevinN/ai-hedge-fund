@@ -5,7 +5,7 @@ from .types import ActionLiteral, Action
 
 
 class TradeExecutor:
-    """Executes trades against a Portfolio with Backtester-identical semantics."""
+    """针对 Portfolio 执行交易，使用与 Backtester 相同的语义。"""
 
     def execute_trade(
         self,
@@ -18,7 +18,7 @@ class TradeExecutor:
         if quantity is None or quantity <= 0:
             return 0
 
-        # Coerce to enum if strings provided
+        # 如果提供了字符串，则强制转换为枚举
         try:
             action_enum = Action(action) if not isinstance(action, Action) else action
         except Exception:
@@ -33,7 +33,7 @@ class TradeExecutor:
         if action_enum == Action.COVER:
             return portfolio.apply_short_cover(ticker, int(quantity), float(current_price))
 
-        # hold or unknown action
+        # 持有或未知操作
         return 0
 
 

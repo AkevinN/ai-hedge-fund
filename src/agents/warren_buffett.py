@@ -17,21 +17,21 @@ class WarrenBuffettSignal(BaseModel):
 
 
 def warren_buffett_agent(state: AgentState, agent_id: str = "warren_buffett_agent"):
-    """Analyzes stocks using Buffett's principles and LLM reasoning."""
+    """使用巴菲特原则和LLM推理分析股票。"""
     data = state["data"]
     end_date = data["end_date"]
     tickers = data["tickers"]
     api_key = get_api_key_from_state(state, "FINANCIAL_DATASETS_API_KEY")
-    # Collect all analysis for LLM reasoning
+    # 收集所有分析数据供LLM推理使用
     analysis_data = {}
     buffett_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
-        # Fetch required data - request more periods for better trend analysis
+        progress.update_status(agent_id, ticker, "获取财务指标")
+        # 获取所需数据 - 请求更多时期以进行更好的趋势分析
         metrics = get_financial_metrics(ticker, end_date, period="ttm", limit=10, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
         financial_line_items = search_line_items(
             ticker,
             [
@@ -54,33 +54,33 @@ def warren_buffett_agent(state: AgentState, agent_id: str = "warren_buffett_agen
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
-        # Get current market cap
+        progress.update_status(agent_id, ticker, "获取市值")
+        # 获取当前市值
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Analyzing fundamentals")
-        # Analyze fundamentals
+        progress.update_status(agent_id, ticker, "分析基本面")
+        # 分析基本面
         fundamental_analysis = analyze_fundamentals(metrics)
 
-        progress.update_status(agent_id, ticker, "Analyzing consistency")
+        progress.update_status(agent_id, ticker, "分析一致性")
         consistency_analysis = analyze_consistency(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing competitive moat")
+        progress.update_status(agent_id, ticker, "分析竞争护城河")
         moat_analysis = analyze_moat(metrics)
 
-        progress.update_status(agent_id, ticker, "Analyzing pricing power")
+        progress.update_status(agent_id, ticker, "分析定价权")
         pricing_power_analysis = analyze_pricing_power(financial_line_items, metrics)
 
-        progress.update_status(agent_id, ticker, "Analyzing book value growth")
+        progress.update_status(agent_id, ticker, "分析账面价值增长")
         book_value_analysis = analyze_book_value_growth(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing management quality")
+        progress.update_status(agent_id, ticker, "分析管理层质量")
         mgmt_analysis = analyze_management_quality(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Calculating intrinsic value")
+        progress.update_status(agent_id, ticker, "计算内在价值")
         intrinsic_value_analysis = calculate_intrinsic_value(financial_line_items)
 
-        # Calculate total score without circle of competence (LLM will handle that)
+        # 计算总分数（不包括能力圈，LLM会处理）
         total_score = (
                 fundamental_analysis["score"] +
                 consistency_analysis["score"] +
@@ -90,22 +90,22 @@ def warren_buffett_agent(state: AgentState, agent_id: str = "warren_buffett_agen
                 book_value_analysis["score"]
         )
 
-        # Update max possible score calculation
+        # 更新最大可能分数计算
         max_possible_score = (
-                10 +  # fundamental_analysis (ROE, debt, margins, current ratio)
+                10 +  # 基本面分析 (ROE, 债务, 利润率, 流动比率)
                 moat_analysis["max_score"] +
                 mgmt_analysis["max_score"] +
-                5 +  # pricing_power (0-5)
-                5  # book_value_growth (0-5)
+                5 +  # 定价权 (0-5)
+                5  # 账面价值增长 (0-5)
         )
 
-        # Add margin of safety analysis if we have both intrinsic value and current price
+        # 如果同时有内在价值和当前价格，则添加安全边际分析
         margin_of_safety = None
         intrinsic_value = intrinsic_value_analysis["intrinsic_value"]
         if intrinsic_value and market_cap:
             margin_of_safety = (intrinsic_value - market_cap) / market_cap
 
-        # Combine all analysis results for LLM evaluation
+        # 合并所有分析结果供LLM评估
         analysis_data[ticker] = {
             "ticker": ticker,
             "score": total_score,
@@ -121,7 +121,7 @@ def warren_buffett_agent(state: AgentState, agent_id: str = "warren_buffett_agen
             "margin_of_safety": margin_of_safety,
         }
 
-        progress.update_status(agent_id, ticker, "Generating Warren Buffett analysis")
+        progress.update_status(agent_id, ticker, "生成Warren Buffett分析")
         buffett_output = generate_buffett_output(
             ticker=ticker,
             analysis_data=analysis_data[ticker],
@@ -129,75 +129,75 @@ def warren_buffett_agent(state: AgentState, agent_id: str = "warren_buffett_agen
             agent_id=agent_id,
         )
 
-        # Store analysis in consistent format with other agents
+        # 以与其他代理一致的格式存储分析结果
         buffett_analysis[ticker] = {
             "signal": buffett_output.signal,
             "confidence": buffett_output.confidence,
             "reasoning": buffett_output.reasoning,
         }
 
-        progress.update_status(agent_id, ticker, "Done", analysis=buffett_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=buffett_output.reasoning)
 
-    # Create the message
+    # 创建消息
     message = HumanMessage(content=json.dumps(buffett_analysis), name=agent_id)
 
-    # Show reasoning if requested
+    # 如果需要则显示推理过程
     if state["metadata"]["show_reasoning"]:
         show_agent_reasoning(buffett_analysis, agent_id)
 
-    # Add the signal to the analyst_signals list
+    # 将信号添加到分析师信号列表
     state["data"]["analyst_signals"][agent_id] = buffett_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {"messages": [message], "data": state["data"]}
 
 
 def analyze_fundamentals(metrics: list) -> dict[str, any]:
-    """Analyze company fundamentals based on Buffett's criteria."""
+    """根据巴菲特的标准分析公司基本面。"""
     if not metrics:
-        return {"score": 0, "details": "Insufficient fundamental data"}
+        return {"score": 0, "details": "基本面数据不足"}
 
     latest_metrics = metrics[0]
 
     score = 0
     reasoning = []
 
-    # Check ROE (Return on Equity)
-    if latest_metrics.return_on_equity and latest_metrics.return_on_equity > 0.15:  # 15% ROE threshold
+    # 检查ROE（股本回报率）
+    if latest_metrics.return_on_equity and latest_metrics.return_on_equity > 0.15:  # 15% ROE阈值
         score += 2
-        reasoning.append(f"Strong ROE of {latest_metrics.return_on_equity:.1%}")
+        reasoning.append(f"强劲的ROE：{latest_metrics.return_on_equity:.1%}")
     elif latest_metrics.return_on_equity:
-        reasoning.append(f"Weak ROE of {latest_metrics.return_on_equity:.1%}")
+        reasoning.append(f"较弱的ROE：{latest_metrics.return_on_equity:.1%}")
     else:
-        reasoning.append("ROE data not available")
+        reasoning.append("ROE数据不可用")
 
-    # Check Debt to Equity
+    # 检查债务权益比
     if latest_metrics.debt_to_equity and latest_metrics.debt_to_equity < 0.5:
         score += 2
-        reasoning.append("Conservative debt levels")
+        reasoning.append("保守的债务水平")
     elif latest_metrics.debt_to_equity:
-        reasoning.append(f"High debt to equity ratio of {latest_metrics.debt_to_equity:.1f}")
+        reasoning.append(f"较高的债务权益比：{latest_metrics.debt_to_equity:.1f}")
     else:
-        reasoning.append("Debt to equity data not available")
+        reasoning.append("债务权益比数据不可用")
 
-    # Check Operating Margin
+    # 检查营业利润率
     if latest_metrics.operating_margin and latest_metrics.operating_margin > 0.15:
         score += 2
-        reasoning.append("Strong operating margins")
+        reasoning.append("强劲的营业利润率")
     elif latest_metrics.operating_margin:
-        reasoning.append(f"Weak operating margin of {latest_metrics.operating_margin:.1%}")
+        reasoning.append(f"较弱的营业利润率：{latest_metrics.operating_margin:.1%}")
     else:
-        reasoning.append("Operating margin data not available")
+        reasoning.append("营业利润率数据不可用")
 
-    # Check Current Ratio
+    # 检查流动比率
     if latest_metrics.current_ratio and latest_metrics.current_ratio > 1.5:
         score += 1
-        reasoning.append("Good liquidity position")
+        reasoning.append("良好的流动性状况")
     elif latest_metrics.current_ratio:
-        reasoning.append(f"Weak liquidity with current ratio of {latest_metrics.current_ratio:.1f}")
+        reasoning.append(f"流动性较弱，流动比率为{latest_metrics.current_ratio:.1f}")
     else:
-        reasoning.append("Current ratio data not available")
+        reasoning.append("流动比率数据不可用")
 
     return {"score": score, "details": "; ".join(reasoning), "metrics": latest_metrics.model_dump()}
 

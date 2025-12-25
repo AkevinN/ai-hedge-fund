@@ -23,7 +23,7 @@ class PortfolioManagerOutput(BaseModel):
 
 ##### Portfolio Management Agent #####
 def portfolio_management_agent(state: AgentState, agent_id: str = "portfolio_manager"):
-    """Makes final trading decisions and generates orders for multiple tickers"""
+    """为多个股票做出最终交易决策并生成订单"""
 
     portfolio = state["data"]["portfolio"]
     analyst_signals = state["data"]["analyst_signals"]
@@ -34,7 +34,7 @@ def portfolio_management_agent(state: AgentState, agent_id: str = "portfolio_man
     max_shares = {}
     signals_by_ticker = {}
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Processing analyst signals")
+        progress.update_status(agent_id, ticker, "处理分析师信号")
 
         # Find the corresponding risk manager for this portfolio manager
         if agent_id.startswith("portfolio_manager_"):
@@ -65,7 +65,7 @@ def portfolio_management_agent(state: AgentState, agent_id: str = "portfolio_man
 
     state["data"]["current_prices"] = current_prices
 
-    progress.update_status(agent_id, None, "Generating trading decisions")
+    progress.update_status(agent_id, None, "生成交易决策")
 
     result = generate_trading_decision(
         tickers=tickers,

@@ -1,4 +1,4 @@
-"""Constants and utilities related to analysts configuration."""
+"""分析师配置相关的常量和工具"""
 
 from src.agents import portfolio_manager
 from src.agents.aswath_damodaran import aswath_damodaran_agent
@@ -20,7 +20,7 @@ from src.agents.mohnish_pabrai import mohnish_pabrai_agent
 from src.agents.news_sentiment import news_sentiment_agent
 from src.agents.growth_agent import growth_analyst_agent
 
-# Define analyst configuration - single source of truth
+# 定义分析师配置 - 单一可信来源
 ANALYST_CONFIG = {
     "aswath_damodaran": {
         "display_name": "Aswath Damodaran (估值之父)",
@@ -168,17 +168,17 @@ ANALYST_CONFIG = {
     },
 }
 
-# Derive ANALYST_ORDER from ANALYST_CONFIG for backwards compatibility
+# 从 ANALYST_CONFIG 派生 ANALYST_ORDER 以实现向后兼容
 ANALYST_ORDER = [(config["display_name"], key) for key, config in sorted(ANALYST_CONFIG.items(), key=lambda x: x[1]["order"])]
 
 
 def get_analyst_nodes():
-    """Get the mapping of analyst keys to their (node_name, agent_func) tuples."""
+    """获取分析师键到其 (node_name, agent_func) 元组的映射"""
     return {key: (f"{key}_agent", config["agent_func"]) for key, config in ANALYST_CONFIG.items()}
 
 
 def get_agents_list():
-    """Get the list of agents for API responses."""
+    """获取 API 响应的代理列表"""
     return [
         {
             "key": key,

@@ -10,7 +10,7 @@ from src.tools.api import get_insider_trades, get_company_news
 
 ##### Sentiment Agent #####
 def sentiment_analyst_agent(state: AgentState, agent_id: str = "sentiment_analyst_agent"):
-    """Analyzes market sentiment and generates trading signals for multiple tickers."""
+    """分析市场情绪并为多个股票生成交易信号。"""
     data = state.get("data", {})
     end_date = data.get("end_date")
     tickers = data.get("tickers")
@@ -19,7 +19,7 @@ def sentiment_analyst_agent(state: AgentState, agent_id: str = "sentiment_analys
     sentiment_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching insider trades")
+        progress.update_status(agent_id, ticker, "获取内部人交易")
 
         # Get the insider trades
         insider_trades = get_insider_trades(
@@ -29,13 +29,13 @@ def sentiment_analyst_agent(state: AgentState, agent_id: str = "sentiment_analys
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Analyzing trading patterns")
+        progress.update_status(agent_id, ticker, "分析交易模式")
 
         # Get the signals from the insider trades
         transaction_shares = pd.Series([t.transaction_shares for t in insider_trades]).dropna()
         insider_signals = np.where(transaction_shares < 0, "bearish", "bullish").tolist()
 
-        progress.update_status(agent_id, ticker, "Fetching company news")
+        progress.update_status(agent_id, ticker, "获取公司新闻")
 
         # Get the company news
         company_news = get_company_news(ticker, end_date, limit=100, api_key=api_key)
@@ -45,7 +45,7 @@ def sentiment_analyst_agent(state: AgentState, agent_id: str = "sentiment_analys
         news_signals = np.where(sentiment == "negative", "bearish", 
                               np.where(sentiment == "positive", "bullish", "neutral")).tolist()
         
-        progress.update_status(agent_id, ticker, "Combining signals")
+        progress.update_status(agent_id, ticker, "合并信号")
         # Combine signals from both sources with weights
         insider_weight = 0.3
         news_weight = 0.7

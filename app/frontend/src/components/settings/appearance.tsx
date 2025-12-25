@@ -10,20 +10,20 @@ export function ThemeSettings() {
   const themes = [
     {
       id: 'light',
-      name: 'Light',
-      description: 'A clean, bright interface',
+      name: '浅色',
+      description: '简洁明亮的界面',
       icon: Sun,
     },
     {
       id: 'dark',
-      name: 'Dark',
-      description: 'A comfortable dark interface',
+      name: '深色',
+      description: '舒适的深色界面',
       icon: Moon,
     },
     {
       id: 'system',
-      name: 'System',
-      description: 'Use your system preference',
+      name: '跟随系统',
+      description: '使用您的系统偏好设置',
       icon: Monitor,
     },
   ];
@@ -31,21 +31,21 @@ export function ThemeSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-primary mb-2">Theme</h2>
+        <h2 className="text-xl font-semibold text-primary mb-2">主题</h2>
         <p className="text-sm text-muted-foreground">
-          Customize the look and feel of your application.
+          自定义应用程序的外观和风格。
         </p>
       </div>
 
       <Card className="bg-panel border-gray-700 dark:border-gray-700">
         <CardHeader>
           <CardTitle className="text-lg font-medium text-primary">
-            Theme
+            主题
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Select your preferred theme or use system setting to automatically switch between light and dark modes.
+            选择您喜欢的主题，或使用系统设置在浅色和深色模式之间自动切换。
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

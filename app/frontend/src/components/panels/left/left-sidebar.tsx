@@ -18,7 +18,7 @@ export function LeftSidebar({
   isCollapsed,
   onWidthChange,
 }: LeftSidebarProps) {
-  // Use our custom hooks
+  // 使用自定义钩子
   const { width, isDragging, elementRef, startResize } = useResizable({
     defaultWidth: 280,
     minWidth: 200,
@@ -26,12 +26,12 @@ export function LeftSidebar({
     side: 'left',
   });
 
-  // Notify parent component of width changes
+  // 通知父组件宽度变化
   useEffect(() => {
     onWidthChange?.(width);
   }, [width, onWidthChange]);
-  
-  // Use flow management hook with tabs
+
+  // 使用带标签页的工作流管理钩子
   const {
     flows,
     searchQuery,
@@ -83,9 +83,9 @@ export function LeftSidebar({
         onRefresh={handleRefresh}
       />
       
-      {/* Resize handle - on the right side for left sidebar */}
+      {/* 调整大小句柄 - 左侧边栏的右侧 */}
       {!isDragging && (
-        <div 
+        <div
           className="absolute top-0 right-0 h-full w-1 cursor-ew-resize transition-all duration-150 z-10"
           onMouseDown={startResize}
         />

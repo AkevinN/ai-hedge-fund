@@ -30,9 +30,9 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
   });
   const [editDialog, setEditDialog] = useState(false);
 
-  // Check if this flow has an active connection
+  // 检查此工作流是否有活动连接
   const connectionState = useFlowConnectionState(flow.id.toString());
-  const hasActiveConnection = connectionState && 
+  const hasActiveConnection = connectionState &&
     (connectionState.state === 'connecting' || connectionState.state === 'connected');
 
   const handleLoadFlow = async () => {
@@ -52,11 +52,11 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
   const handleMenuClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Get the button's position for the menu
+    // 获取按钮位置以显示菜单
     const rect = e.currentTarget.getBoundingClientRect();
     setContextMenu({
       isOpen: true,
-      position: { x: rect.right - 160, y: rect.bottom } // Offset menu to the left of the button
+      position: { x: rect.right - 160, y: rect.bottom } // 将菜单偏移到按钮左侧
     });
   };
 
@@ -78,7 +78,7 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
   };
 
   const handleDeleteFlow = async () => {
-    if (window.confirm(`Are you sure you want to delete "${flow.name}"?`)) {
+    if (window.confirm(`确定要删除 "${flow.name}" 吗？`)) {
       try {
         await onDeleteFlow(flow);
       } catch (error) {
@@ -99,7 +99,7 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
     });
   };
 
-  // Filter out "default" tag
+  // 过滤掉 "default" 标签
   const filteredTags = flow.tags?.filter(tag => tag !== 'default') || [];
 
   return (
@@ -137,12 +137,12 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
                 {flow.name}
               </span>
             </div>
-            
-            {/* Active connection indicator - right aligned */}
+
+            {/* 活动连接指示器 - 右对齐 */}
             {hasActiveConnection && (
               <div className="flex items-center gap-1 flex-shrink-0">
                 <Zap className="h-3 w-3 text-yellow-500 animate-pulse" />
-                <span className="text-xs text-yellow-500 font-medium">Running</span>
+                <span className="text-xs text-yellow-500 font-medium">运行中</span>
               </div>
             )}
           </div>
@@ -174,7 +174,7 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
             size="icon"
             onClick={handleMenuClick}
             className="h-6 w-6 text-muted-foreground hover-item opacity-0 group-hover:opacity-100 transition-opacity rounded"
-            title="More options"
+            title="更多选项"
           >
             <MoreHorizontal size={14} />
           </Button>

@@ -43,10 +43,10 @@ def aswath_damodaran_agent(state: AgentState, agent_id: str = "aswath_damodaran_
 
     for ticker in tickers:
         # ─── Fetch core data ────────────────────────────────────────────────────
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="ttm", limit=5, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching financial line items")
+        progress.update_status(agent_id, ticker, "获取财务项目明细")
         line_items = search_line_items(
             ticker,
             [
@@ -63,20 +63,20 @@ def aswath_damodaran_agent(state: AgentState, agent_id: str = "aswath_damodaran_
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
         # ─── Analyses ───────────────────────────────────────────────────────────
-        progress.update_status(agent_id, ticker, "Analyzing growth and reinvestment")
+        progress.update_status(agent_id, ticker, "分析增长和再投资")
         growth_analysis = analyze_growth_and_reinvestment(metrics, line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing risk profile")
+        progress.update_status(agent_id, ticker, "分析风险特征")
         risk_analysis = analyze_risk_profile(metrics, line_items)
 
-        progress.update_status(agent_id, ticker, "Calculating intrinsic value (DCF)")
+        progress.update_status(agent_id, ticker, "计算内在价值(DCF)")
         intrinsic_val_analysis = calculate_intrinsic_value_dcf(metrics, line_items, risk_analysis)
 
-        progress.update_status(agent_id, ticker, "Assessing relative valuation")
+        progress.update_status(agent_id, ticker, "评估相对估值")
         relative_val_analysis = analyze_relative_valuation(metrics)
 
         # ─── Score & margin of safety ──────────────────────────────────────────
@@ -113,7 +113,7 @@ def aswath_damodaran_agent(state: AgentState, agent_id: str = "aswath_damodaran_
         }
 
         # ─── LLM: craft Damodaran-style narrative ──────────────────────────────
-        progress.update_status(agent_id, ticker, "Generating Damodaran analysis")
+        progress.update_status(agent_id, ticker, "生成Damodaran分析")
         damodaran_output = generate_damodaran_output(
             ticker=ticker,
             analysis_data=analysis_data,

@@ -21,7 +21,7 @@ export default function ComponentItem({
   const [isHovered, setIsHovered] = useState(false);
   
   const handlePlusClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent triggering the parent onClick
+    e.stopPropagation(); // 防止触发父元素的 onClick
     if (onClick) onClick();
   };
   
@@ -49,14 +49,14 @@ export default function ComponentItem({
       </div>
       <span className="truncate">{label}</span>
       
-      {/* Add button using shadcn Button */}
+      {/* 使用 shadcn Button 的添加按钮 */}
       <div className="ml-auto opacity-0 group-hover:opacity-100">
         <Button
           variant="ghost"
           size="icon"
           className="h-5 w-5 hover-bg hover:text-primary text-muted-foreground flex items-center justify-center"
           onClick={handlePlusClick}
-          aria-label="Add"
+          aria-label="添加"
         >
           <Plus size={14} />
         </Button>

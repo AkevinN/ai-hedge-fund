@@ -36,16 +36,16 @@ export function FlowList({
 }: FlowListProps) {
   const { tabs, activeTabId } = useTabsContext();
 
-  // Only consider a flow active if the current active tab is a flow tab with that flow's ID
+  // 仅当当前活动标签页是具有该工作流ID的工作流标签页时，才认为工作流处于活动状态
   const getActiveFlowId = (): number | null => {
     const activeTab = tabs.find(tab => tab.id === activeTabId);
-    
-    // If no active tab or active tab is not a flow tab, no flow should be active
+
+    // 如果没有活动标签页或活动标签页不是工作流标签页，则没有工作流应处于活动状态
     if (!activeTab || activeTab.type !== 'flow') {
       return null;
     }
-    
-    // Return the flow ID from the active flow tab
+
+    // 从活动工作流标签页返回工作流ID
     return activeTab.flow?.id || null;
   };
 

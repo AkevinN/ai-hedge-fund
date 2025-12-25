@@ -23,15 +23,15 @@ class PhilFisherSignal(BaseModel):
 
 def phil_fisher_agent(state: AgentState, agent_id: str = "phil_fisher_agent"):
     """
-    Analyzes stocks using Phil Fisher's investing principles:
-      - Seek companies with long-term above-average growth potential
-      - Emphasize quality of management and R&D
-      - Look for strong margins, consistent growth, and manageable leverage
-      - Combine fundamental 'scuttlebutt' style checks with basic sentiment and insider data
-      - Willing to pay up for quality, but still mindful of valuation
-      - Generally focuses on long-term compounding
+    使用菲尔·费舍尔的投资原则分析股票：
+      - 寻找具有长期高于平均增长潜力的公司
+      - 强调管理质量和研发
+      - 寻找强劲的利润率、持续增长和可控的杠杆
+      - 将基本面"闲聊"式检查与基本情绪和内部人数据相结合
+      - 愿意为质量付费，但仍关注估值
+      - 通常专注于长期复利
 
-    Returns a bullish/bearish/neutral signal with confidence and reasoning.
+    返回看涨/看跌/中性信号，包含置信度和推理。
     """
     data = state["data"]
     end_date = data["end_date"]
@@ -41,8 +41,8 @@ def phil_fisher_agent(state: AgentState, agent_id: str = "phil_fisher_agent"):
     fisher_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
-        # Include relevant line items for Phil Fisher's approach:
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
+        # 包括Phil Fisher方法的相关项目：
         #   - Growth & Quality: revenue, net_income, earnings_per_share, R&D expense
         #   - Margins & Stability: operating_income, operating_margin, gross_margin
         #   - Management Efficiency & Leverage: total_debt, shareholders_equity, free_cash_flow
@@ -70,31 +70,31 @@ def phil_fisher_agent(state: AgentState, agent_id: str = "phil_fisher_agent"):
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching insider trades")
+        progress.update_status(agent_id, ticker, "获取内部人交易")
         insider_trades = get_insider_trades(ticker, end_date, limit=50, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching company news")
+        progress.update_status(agent_id, ticker, "获取公司新闻")
         company_news = get_company_news(ticker, end_date, limit=50, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Analyzing growth & quality")
+        progress.update_status(agent_id, ticker, "分析增长和质量")
         growth_quality = analyze_fisher_growth_quality(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing margins & stability")
+        progress.update_status(agent_id, ticker, "分析利润率和稳定性")
         margins_stability = analyze_margins_stability(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing management efficiency & leverage")
+        progress.update_status(agent_id, ticker, "分析管理效率和杠杆")
         mgmt_efficiency = analyze_management_efficiency_leverage(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing valuation (Fisher style)")
+        progress.update_status(agent_id, ticker, "分析估值(Fisher风格)")
         fisher_valuation = analyze_fisher_valuation(financial_line_items, market_cap)
 
-        progress.update_status(agent_id, ticker, "Analyzing insider activity")
+        progress.update_status(agent_id, ticker, "分析内部人活动")
         insider_activity = analyze_insider_activity(insider_trades)
 
-        progress.update_status(agent_id, ticker, "Analyzing sentiment")
+        progress.update_status(agent_id, ticker, "分析情绪")
         sentiment_analysis = analyze_sentiment(company_news)
 
         # Combine partial scores with weights typical for Fisher:
@@ -135,7 +135,7 @@ def phil_fisher_agent(state: AgentState, agent_id: str = "phil_fisher_agent"):
             "sentiment_analysis": sentiment_analysis,
         }
 
-        progress.update_status(agent_id, ticker, "Generating Phil Fisher-style analysis")
+        progress.update_status(agent_id, ticker, "生成Phil Fisher风格分析")
         fisher_output = generate_fisher_output(
             ticker=ticker,
             analysis_data=analysis_data,
@@ -149,9 +149,9 @@ def phil_fisher_agent(state: AgentState, agent_id: str = "phil_fisher_agent"):
             "reasoning": fisher_output.reasoning,
         }
 
-        progress.update_status(agent_id, ticker, "Done", analysis=fisher_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=fisher_output.reasoning)
 
-    # Wrap results in a single message
+    # 将结果包装在单个消息中
     message = HumanMessage(content=json.dumps(fisher_analysis), name=agent_id)
 
     if state["metadata"].get("show_reasoning"):
@@ -159,7 +159,7 @@ def phil_fisher_agent(state: AgentState, agent_id: str = "phil_fisher_agent"):
 
     state["data"]["analyst_signals"][agent_id] = fisher_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
     
     return {"messages": [message], "data": state["data"]}
 

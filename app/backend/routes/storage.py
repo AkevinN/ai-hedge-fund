@@ -20,25 +20,25 @@ class SaveJsonRequest(BaseModel):
     },
 )
 async def save_json_file(request: SaveJsonRequest):
-    """Save JSON data to the project's /outputs directory."""
+    """将JSON数据保存到项目的/outputs目录"""
     try:
-        # Create outputs directory if it doesn't exist
-        project_root = Path(__file__).parent.parent.parent.parent  # Navigate to project root
+        # 如果目录不存在则创建outputs目录
+        project_root = Path(__file__).parent.parent.parent.parent  # 导航到项目根目录
         outputs_dir = project_root / "outputs"
         outputs_dir.mkdir(exist_ok=True)
-        
-        # Construct file path
+
+        # 构建文件路径
         file_path = outputs_dir / request.filename
-        
-        # Save JSON data to file
+
+        # 将JSON数据保存到文件
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(request.data, f, indent=2, ensure_ascii=False)
-        
+
         return {
             "success": True,
-            "message": f"File saved successfully to {file_path}",
+            "message": f"文件成功保存到 {file_path}",
             "filename": request.filename
         }
-        
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"保存文件失败: {str(e)}") 

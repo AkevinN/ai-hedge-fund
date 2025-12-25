@@ -30,13 +30,13 @@ class MichaelBurrySignal(BaseModel):
 
 
 def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"):
-    """Analyse stocks using Michael Burry's deep‑value, contrarian framework."""
+    """使用Michael Burry的深度价值、逆向投资框架分析股票。"""
     api_key = get_api_key_from_state(state, "FINANCIAL_DATASETS_API_KEY")
     data = state["data"]
     end_date: str = data["end_date"]  # YYYY‑MM‑DD
     tickers: list[str] = data["tickers"]
 
-    # We look one year back for insider trades / news flow
+    # 查看过去一年的内部人交易/新闻流
     start_date = (datetime.fromisoformat(end_date) - timedelta(days=365)).date().isoformat()
 
     analysis_data: dict[str, dict] = {}
@@ -44,12 +44,12 @@ def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"
 
     for ticker in tickers:
         # ------------------------------------------------------------------
-        # Fetch raw data
+        # 获取原始数据
         # ------------------------------------------------------------------
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="ttm", limit=5, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching line items")
+        progress.update_status(agent_id, ticker, "获取项目数据")
         line_items = search_line_items(
             ticker,
             [
@@ -66,28 +66,28 @@ def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Fetching insider trades")
+        progress.update_status(agent_id, ticker, "获取内部人交易")
         insider_trades = get_insider_trades(ticker, end_date=end_date, start_date=start_date)
 
-        progress.update_status(agent_id, ticker, "Fetching company news")
+        progress.update_status(agent_id, ticker, "获取公司新闻")
         news = get_company_news(ticker, end_date=end_date, start_date=start_date, limit=250)
 
-        progress.update_status(agent_id, ticker, "Fetching market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
         # ------------------------------------------------------------------
-        # Run sub‑analyses
+        # 运行子分析
         # ------------------------------------------------------------------
-        progress.update_status(agent_id, ticker, "Analyzing value")
+        progress.update_status(agent_id, ticker, "分析价值")
         value_analysis = _analyze_value(metrics, line_items, market_cap)
 
-        progress.update_status(agent_id, ticker, "Analyzing balance sheet")
+        progress.update_status(agent_id, ticker, "分析资产负债表")
         balance_sheet_analysis = _analyze_balance_sheet(metrics, line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing insider activity")
+        progress.update_status(agent_id, ticker, "分析内部人活动")
         insider_analysis = _analyze_insider_activity(insider_trades)
 
-        progress.update_status(agent_id, ticker, "Analyzing contrarian sentiment")
+        progress.update_status(agent_id, ticker, "分析逆向情绪")
         contrarian_analysis = _analyze_contrarian_sentiment(news)
 
         # ------------------------------------------------------------------
@@ -114,7 +114,7 @@ def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"
             signal = "neutral"
 
         # ------------------------------------------------------------------
-        # Collect data for LLM reasoning & output
+        # 收集LLM推理和输出的数据
         # ------------------------------------------------------------------
         analysis_data[ticker] = {
             "signal": signal,
@@ -127,7 +127,7 @@ def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"
             "market_cap": market_cap,
         }
 
-        progress.update_status(agent_id, ticker, "Generating LLM output")
+        progress.update_status(agent_id, ticker, "生成LLM输出")
         burry_output = _generate_burry_output(
             ticker=ticker,
             analysis_data=analysis_data,
@@ -141,10 +141,10 @@ def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"
             "reasoning": burry_output.reasoning,
         }
 
-        progress.update_status(agent_id, ticker, "Done", analysis=burry_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=burry_output.reasoning)
 
     # ----------------------------------------------------------------------
-    # Return to the graph
+    # 返回给图
     # ----------------------------------------------------------------------
     message = HumanMessage(content=json.dumps(burry_analysis), name=agent_id)
 
@@ -153,7 +153,7 @@ def michael_burry_agent(state: AgentState, agent_id: str = "michael_burry_agent"
 
     state["data"]["analyst_signals"][agent_id] = burry_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {"messages": [message], "data": state["data"]}
 

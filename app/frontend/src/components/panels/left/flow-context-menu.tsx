@@ -73,9 +73,9 @@ export function FlowContextMenu({
           onClick={() => handleAction(onEdit)}
         >
           <Edit size={14} className="mr-2" />
-          Edit
+          编辑
         </Button>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -83,9 +83,9 @@ export function FlowContextMenu({
           onClick={() => handleAction(onDuplicate)}
         >
           <Copy size={14} className="mr-2" />
-          Duplicate
+          复制
         </Button>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -93,7 +93,7 @@ export function FlowContextMenu({
           onClick={() => handleAction(onDelete)}
         >
           <Trash2 size={14} className="mr-2" />
-          Delete
+          删除
         </Button>
       </div>
     </div>

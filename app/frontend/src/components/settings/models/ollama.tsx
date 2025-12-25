@@ -558,10 +558,10 @@ export function OllamaSettings() {
   };
 
   const getStatusText = () => {
-    if (!ollamaStatus) return "Checking...";
-    if (!ollamaStatus.installed) return "Not Installed";
-    if (!ollamaStatus.running) return "Not Running";
-    return "Running";
+    if (!ollamaStatus) return "检查中...";
+    if (!ollamaStatus.installed) return "未安装";
+    if (!ollamaStatus.running) return "未运行";
+    return "运行中";
   };
 
   const getStatusColor = (): "secondary" | "destructive" | "outline" | "warning" | "success" | null | undefined => {
@@ -615,7 +615,7 @@ export function OllamaSettings() {
         <div>
           <h3 className="text-lg font-semibold text-primary mb-2">Ollama</h3>
           <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-            Manage local AI models with Ollama for enhanced privacy and performance.
+            使用 Ollama 管理本地 AI 模型，增强隐私保护和性能表现。
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -639,7 +639,7 @@ export function OllamaSettings() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5" />
             <div>
-              <h4 className="font-medium text-red-300">Error</h4>
+              <h4 className="font-medium text-red-300">错误</h4>
               <p className="text-sm text-red-400 mt-1">{error}</p>
             </div>
           </div>
@@ -651,18 +651,18 @@ export function OllamaSettings() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-muted-foreground mt-0.5" />
             <div>
-              <h4 className="font-medium text-muted-foreground">Ollama Not Installed</h4>
+              <h4 className="font-medium text-muted-foreground">Ollama 未安装</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Install Ollama to use local AI models. Visit{' '}
-                <a 
-                  href="https://ollama.com" 
-                  target="_blank" 
+                安装 Ollama 以使用本地 AI 模型。访问{' '}
+                <a
+                  href="https://ollama.com"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:no-underline text-muted-foreground"
                 >
                   ollama.com
                 </a>{' '}
-                to download and install.
+                下载并安装。
               </p>
             </div>
           </div>
@@ -672,9 +672,9 @@ export function OllamaSettings() {
       {ollamaStatus?.installed && !ollamaStatus.running && (
         <div className="flex items-center justify-between bg-muted rounded-lg p-4">
           <div>
-            <h4 className="font-medium text-primary">Ollama Server</h4>
+            <h4 className="font-medium text-primary">Ollama 服务器</h4>
             <p className="text-sm text-primary">
-              Ollama is installed but not currently running.
+              Ollama 已安装但当前未运行。
             </p>
           </div>
           <Button
@@ -683,7 +683,7 @@ export function OllamaSettings() {
             className="flex items-center gap-2 text-primary hover:bg-primary/20 hover:text-primary bg-primary/10 border-primary/30 hover:border-primary/50"
           >
             <Play className="h-4 w-4" />
-            {actionLoading === 'start-server' ? 'Starting...' : 'Start Server'}
+            {actionLoading === 'start-server' ? '启动中...' : '启动服务器'}
           </Button>
         </div>
       )}
@@ -694,10 +694,10 @@ export function OllamaSettings() {
             <CheckCircle className="h-5 w-5 text-primary" />
             <div>
               <span className="font-medium text-primary">
-                Ollama Server Running
+                Ollama 服务器运行中
               </span>
               <p className="text-sm text-muted-foreground">
-                Server available at {ollamaStatus.server_url}
+                服务器地址：{ollamaStatus.server_url}
               </p>
             </div>
           </div>
@@ -707,7 +707,7 @@ export function OllamaSettings() {
             className="flex items-center gap-2 text-red-400 hover:bg-red-500/20 hover:text-red-300 bg-red-500/10 border-red-500/30 hover:border-red-500/50"
           >
             <Square className="h-4 w-4" />
-            {actionLoading === 'stop-server' ? 'Stopping...' : 'Disconnect'}
+            {actionLoading === 'stop-server' ? '停止中...' : '断开连接'}
           </Button>
         </div>
       )}
@@ -715,13 +715,13 @@ export function OllamaSettings() {
       {ollamaStatus?.running && (
         <div className="space-y-2">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-medium text-primary">Available Models</h3>
+            <h3 className="font-medium text-primary">可用模型</h3>
             <span className="text-xs text-muted-foreground">
-              {ollamaStatus.available_models.length} downloaded
+              已下载 {ollamaStatus.available_models.length} 个
             </span>
           </div>
           
-          {/* Show active downloads */}
+          {/* 显示正在下载的模型 */}
           {Object.entries(downloadProgress).map(([modelName, progress]) => (
             <div key={`download-${modelName}`} className="bg-muted rounded-md px-3 py-3">
               <div className="flex items-center justify-between mb-2">
@@ -736,10 +736,10 @@ export function OllamaSettings() {
                     progress.status === 'error' && "bg-red-600/30 text-red-500 border-red-600/40",
                     progress.status === 'cancelled' && "bg-muted text-muted-foreground"
                   )}>
-                    {progress.status === 'downloading' && 'Downloading'}
-                    {progress.status === 'completed' && 'Completed'}
-                    {progress.status === 'error' && 'Failed'}
-                    {progress.status === 'cancelled' && 'Cancelled'}
+                    {progress.status === 'downloading' && '下载中'}
+                    {progress.status === 'completed' && '已完成'}
+                    {progress.status === 'error' && '失败'}
+                    {progress.status === 'cancelled' && '已取消'}
                     {!['downloading', 'completed', 'error', 'cancelled'].includes(progress.status) && progress.status}
                   </Badge>
                 </div>
@@ -757,8 +757,8 @@ export function OllamaSettings() {
                   )}
                 </Button>
               </div>
-              
-              {/* Progress bar */}
+
+              {/* 进度条 */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{progress.phase || progress.status}</span>
@@ -828,7 +828,7 @@ export function OllamaSettings() {
                           className="flex items-center gap-2 h-7 text-primary hover:bg-primary/20 hover:text-primary bg-primary/10 border-primary/30 hover:border-primary/50"
                         >
                           <Download className="h-3 w-3" />
-                          Download
+                          下载
                         </Button>
                       </>
                     )}
@@ -839,13 +839,13 @@ export function OllamaSettings() {
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No models available</p>
+              <p className="text-sm">暂无可用模型</p>
             </div>
           )}
         </div>
       )}
-      
-      {/* Delete Confirmation Dialog */}
+
+      {/* 删除确认对话框 */}
       <Dialog open={deleteConfirmation.isOpen} onOpenChange={(open) => {
         if (!open) cancelDeleteModel();
       }}>
@@ -853,16 +853,16 @@ export function OllamaSettings() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-400" />
-              Delete Model
+              删除模型
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete <strong>{deleteConfirmation.displayName}</strong>?
+              确定要删除 <strong>{deleteConfirmation.displayName}</strong> 吗？
               <br />
               <span className="text-sm text-muted-foreground mt-1 block">
-                Model: {deleteConfirmation.modelName}
+                模型：{deleteConfirmation.modelName}
               </span>
               <br />
-              This action cannot be undone. You will need to download the model again to use it.
+              此操作不可撤销。您需要重新下载才能使用该模型。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2">
@@ -871,7 +871,7 @@ export function OllamaSettings() {
               onClick={cancelDeleteModel}
               disabled={actionLoading === `delete-${deleteConfirmation.modelName}`}
             >
-              Cancel
+              取消
             </Button>
             <Button
               variant="destructive"
@@ -880,13 +880,13 @@ export function OllamaSettings() {
               className="flex items-center gap-2"
             >
               <Trash2 className="h-4 w-4" />
-              {actionLoading === `delete-${deleteConfirmation.modelName}` ? 'Deleting...' : 'Delete Model'}
+              {actionLoading === `delete-${deleteConfirmation.modelName}` ? '删除中...' : '删除模型'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
-      {/* Cancel Download Confirmation Dialog */}
+
+      {/* 取消下载确认对话框 */}
       <Dialog open={cancelConfirmation.isOpen} onOpenChange={(open) => {
         if (!open) cancelCancelDownload();
       }}>
@@ -894,16 +894,16 @@ export function OllamaSettings() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-yellow-500" />
-              Cancel Download
+              取消下载
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel the download of <strong>{cancelConfirmation.displayName}</strong>?
+              确定要取消下载 <strong>{cancelConfirmation.displayName}</strong> 吗？
               <br />
               <span className="text-sm text-muted-foreground mt-1 block">
-                Model: {cancelConfirmation.modelName}
+                模型：{cancelConfirmation.modelName}
               </span>
               <br />
-              Any progress will be lost and you'll need to start the download again.
+              所有进度将丢失，您需要重新开始下载。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2">
@@ -912,7 +912,7 @@ export function OllamaSettings() {
               onClick={cancelCancelDownload}
               disabled={cancellingDownloads.has(cancelConfirmation.modelName)}
             >
-              Continue Download
+              继续下载
             </Button>
             <Button
               variant="destructive"
@@ -921,7 +921,7 @@ export function OllamaSettings() {
               className="flex items-center gap-2"
             >
               <X className="h-4 w-4" />
-              {cancellingDownloads.has(cancelConfirmation.modelName) ? 'Cancelling...' : 'Cancel Download'}
+              {cancellingDownloads.has(cancelConfirmation.modelName) ? '取消中...' : '取消下载'}
             </Button>
           </DialogFooter>
         </DialogContent>

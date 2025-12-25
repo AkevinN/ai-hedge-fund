@@ -9,9 +9,9 @@ from .valuation import compute_portfolio_summary
 
 
 class OutputBuilder:
-    """Builds daily output rows and prints results using display utils.
+    """构建每日输出行并使用显示工具打印结果。
 
-    Stateless: callers provide inputs and receive rows back.
+    无状态：调用者提供输入并接收返回的行。
     """
 
     def __init__(self, *, initial_capital: float | None = None) -> None:
@@ -36,7 +36,7 @@ class OutputBuilder:
         decisions = agent_output.get("decisions", {})
 
         for ticker in tickers:
-            # Analyst signal counts removed from day table
+            # 分析师信号计数已从日表中删除
 
             pos = portfolio.get_positions()[ticker]
             long_val = pos["long"] * current_prices[ticker]
@@ -59,7 +59,7 @@ class OutputBuilder:
                 )
             )
 
-        # Summary row
+        # 汇总行
         initial_value = self._initial_capital if self._initial_capital is not None else total_value
         summary = compute_portfolio_summary(
             portfolio=portfolio,

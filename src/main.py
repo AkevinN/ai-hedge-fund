@@ -21,14 +21,14 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
 
-# Load environment variables from .env file
+# 从 .env 文件加载环境变量
 load_dotenv()
 
 init(autoreset=True)
 
 
 def parse_hedge_fund_response(response):
-    """Parses a JSON string and returns a dictionary."""
+    """解析 JSON 字符串并返回字典"""
     try:
         return json.loads(response)
     except json.JSONDecodeError as e:
@@ -42,7 +42,7 @@ def parse_hedge_fund_response(response):
         return None
 
 
-##### Run the Hedge Fund #####
+##### 运行对冲基金 #####
 def run_hedge_fund(
     tickers: list[str],
     start_date: str,
@@ -53,11 +53,11 @@ def run_hedge_fund(
     model_name: str = "gpt-4.1",
     model_provider: str = "OpenAI",
 ):
-    # Start progress tracking
+    # 开始进度跟踪
     progress.start()
 
     try:
-        # Build workflow (default to all analysts when none provided)
+        # 构建工作流（未提供时默认使用所有分析师）
         workflow = create_workflow(selected_analysts if selected_analysts else None)
         agent = workflow.compile()
 
@@ -65,7 +65,7 @@ def run_hedge_fund(
             {
                 "messages": [
                     HumanMessage(
-                        content="Make trading decisions based on the provided data.",
+                        content="基于提供的数据做出交易决策",
                     )
                 ],
                 "data": {
@@ -88,37 +88,37 @@ def run_hedge_fund(
             "analyst_signals": final_state["data"]["analyst_signals"],
         }
     finally:
-        # Stop progress tracking
+        # 停止进度跟踪
         progress.stop()
 
 
 def start(state: AgentState):
-    """Initialize the workflow with the input message."""
+    """使用输入消息初始化工作流"""
     return state
 
 
 def create_workflow(selected_analysts=None):
-    """Create the workflow with selected analysts."""
+    """使用选定的分析师创建工作流"""
     workflow = StateGraph(AgentState)
     workflow.add_node("start_node", start)
 
-    # Get analyst nodes from the configuration
+    # 从配置中获取分析师节点
     analyst_nodes = get_analyst_nodes()
 
-    # Default to all analysts if none selected
+    # 如果未选择则默认使用所有分析师
     if selected_analysts is None:
         selected_analysts = list(analyst_nodes.keys())
-    # Add selected analyst nodes
+    # 添加选定的分析师节点
     for analyst_key in selected_analysts:
         node_name, node_func = analyst_nodes[analyst_key]
         workflow.add_node(node_name, node_func)
         workflow.add_edge("start_node", node_name)
 
-    # Always add risk and portfolio management
+    # 始终添加风险和投资组合管理
     workflow.add_node("risk_management_agent", risk_management_agent)
     workflow.add_node("portfolio_manager", portfolio_management_agent)
 
-    # Connect selected analysts to risk management
+    # 将选定的分析师连接到风险管理
     for analyst_key in selected_analysts:
         node_name = analyst_nodes[analyst_key][0]
         workflow.add_edge(node_name, "risk_management_agent")
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     tickers = inputs.tickers
     selected_analysts = inputs.selected_analysts
 
-    # Construct portfolio here
+    # 在此构建投资组合
     portfolio = {
         "cash": inputs.initial_cash,
         "margin_requirement": inputs.margin_requirement,

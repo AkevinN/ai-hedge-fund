@@ -9,7 +9,7 @@ from src.utils.api_key import get_api_key_from_state
 
 ##### Risk Management Agent #####
 def risk_management_agent(state: AgentState, agent_id: str = "risk_management_agent"):
-    """Controls position sizing based on volatility-adjusted risk factors for multiple tickers."""
+    """基于波动率调整的风险因素控制多个股票的仓位规模。"""
     portfolio = state["data"]["portfolio"]
     data = state["data"]
     tickers = data["tickers"]
@@ -25,7 +25,7 @@ def risk_management_agent(state: AgentState, agent_id: str = "risk_management_ag
     all_tickers = set(tickers) | set(portfolio.get("positions", {}).keys())
     
     for ticker in all_tickers:
-        progress.update_status(agent_id, ticker, "Fetching price data and calculating volatility")
+        progress.update_status(agent_id, ticker, "获取价格数据并计算波动率")
         
         prices = get_prices(
             ticker=ticker,
@@ -35,7 +35,7 @@ def risk_management_agent(state: AgentState, agent_id: str = "risk_management_ag
         )
 
         if not prices:
-            progress.update_status(agent_id, ticker, "Warning: No price data found")
+            progress.update_status(agent_id, ticker, "警告：未找到价格数据")
             volatility_data[ticker] = {
                 "daily_volatility": 0.05,  # Default fallback volatility (5% daily)
                 "annualized_volatility": 0.05 * np.sqrt(252),
@@ -65,7 +65,7 @@ def risk_management_agent(state: AgentState, agent_id: str = "risk_management_ag
                 f"Price: {current_price:.2f}, Ann. Vol: {volatility_metrics['annualized_volatility']:.1%}"
             )
         else:
-            progress.update_status(agent_id, ticker, "Warning: Insufficient price data")
+            progress.update_status(agent_id, ticker, "警告：价格数据不足")
             current_prices[ticker] = 0
             volatility_data[ticker] = {
                 "daily_volatility": 0.05,
@@ -104,10 +104,10 @@ def risk_management_agent(state: AgentState, agent_id: str = "risk_management_ag
 
     # Calculate volatility- and correlation-adjusted risk limits for each ticker
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Calculating volatility- and correlation-adjusted limits")
+        progress.update_status(agent_id, ticker, "计算波动率和相关性调整限额")
         
         if ticker not in current_prices or current_prices[ticker] <= 0:
-            progress.update_status(agent_id, ticker, "Failed: No valid price data")
+            progress.update_status(agent_id, ticker, "失败：无有效价格数据")
             risk_analysis[ticker] = {
                 "remaining_position_limit": 0.0,
                 "current_price": 0.0,
@@ -200,7 +200,7 @@ def risk_management_agent(state: AgentState, agent_id: str = "risk_management_ag
             f"Adj. limit: {combined_limit_pct:.1%}, Available: ${max_position_size:.0f}"
         )
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     message = HumanMessage(
         content=json.dumps(risk_analysis),

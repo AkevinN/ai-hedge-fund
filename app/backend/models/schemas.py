@@ -28,7 +28,7 @@ class PortfolioPosition(BaseModel):
     @classmethod
     def price_must_be_positive(cls, v: float) -> float:
         if v <= 0:
-            raise ValueError('Trade price must be positive!')
+            raise ValueError('交易价格必须为正数！')
         return v
 
 
@@ -57,7 +57,7 @@ class ErrorResponse(BaseModel):
     error: str | None = None
 
 
-# Base class for shared fields between HedgeFundRequest and BacktestRequest
+# HedgeFundRequest 和 BacktestRequest 之间共享字段的基类
 class BaseHedgeFundRequest(BaseModel):
     tickers: List[str]
     graph_nodes: List[GraphNode]
@@ -70,24 +70,24 @@ class BaseHedgeFundRequest(BaseModel):
     api_keys: Optional[Dict[str, str]] = None
 
     def get_agent_ids(self) -> List[str]:
-        """Extract agent IDs from graph structure"""
+        """从图结构中提取 agent ID"""
         return [node.id for node in self.graph_nodes]
 
     def get_agent_model_config(self, agent_id: str) -> tuple[str, ModelProvider]:
-        """Get model configuration for a specific agent"""
+        """获取特定 agent 的模型配置"""
         if self.agent_models:
-            # Extract base agent key from unique node ID for matching
+            # 从唯一的节点 ID 中提取基本 agent key 用于匹配
             base_agent_key = extract_base_agent_key(agent_id)
-            
+
             for config in self.agent_models:
-                # Check both unique node ID and base agent key for matches
+                # 检查唯一节点 ID 和基本 agent key 是否匹配
                 config_base_key = extract_base_agent_key(config.agent_id)
                 if config.agent_id == agent_id or config_base_key == base_agent_key:
                     return (
                         config.model_name or self.model_name,
                         config.model_provider or self.model_provider
                     )
-        # Fallback to global model settings
+        # 回退到全局模型设置
         return self.model_name, self.model_provider
 
 
@@ -134,13 +134,13 @@ class HedgeFundRequest(BaseHedgeFundRequest):
     initial_cash: float = 100000.0
 
     def get_start_date(self) -> str:
-        """Calculate start date if not provided"""
+        """如果未提供，计算开始日期"""
         if self.start_date:
             return self.start_date
         return (datetime.strptime(self.end_date, "%Y-%m-%d") - timedelta(days=90)).strftime("%Y-%m-%d")
 
 
-# Flow-related schemas
+# Flow 相关的 schemas
 class FlowCreateRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     description: Optional[str] = None
@@ -181,7 +181,7 @@ class FlowResponse(BaseModel):
 
 
 class FlowSummaryResponse(BaseModel):
-    """Lightweight flow response without nodes/edges for listing"""
+    """用于列表展示的轻量级 flow 响应，不包含节点/边"""
     id: int
     name: str
     description: Optional[str]
@@ -196,19 +196,19 @@ class FlowSummaryResponse(BaseModel):
 
 # Flow Run schemas
 class FlowRunCreateRequest(BaseModel):
-    """Request to create a new flow run"""
+    """创建新 flow run 的请求"""
     request_data: Optional[Dict[str, Any]] = None
 
 
 class FlowRunUpdateRequest(BaseModel):
-    """Request to update an existing flow run"""
+    """更新现有 flow run 的请求"""
     status: Optional[FlowRunStatus] = None
     results: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
 
 
 class FlowRunResponse(BaseModel):
-    """Complete flow run response"""
+    """完整的 flow run 响应"""
     id: int
     flow_id: int
     status: FlowRunStatus
@@ -226,7 +226,7 @@ class FlowRunResponse(BaseModel):
 
 
 class FlowRunSummaryResponse(BaseModel):
-    """Lightweight flow run response for listing"""
+    """用于列表展示的轻量级 flow run 响应"""
     id: int
     flow_id: int
     status: FlowRunStatus
@@ -242,7 +242,7 @@ class FlowRunSummaryResponse(BaseModel):
 
 # API Key schemas
 class ApiKeyCreateRequest(BaseModel):
-    """Request to create or update an API key"""
+    """创建或更新 API key 的请求"""
     provider: str = Field(..., min_length=1, max_length=100)
     key_value: str = Field(..., min_length=1)
     description: Optional[str] = None
@@ -250,14 +250,14 @@ class ApiKeyCreateRequest(BaseModel):
 
 
 class ApiKeyUpdateRequest(BaseModel):
-    """Request to update an existing API key"""
+    """更新现有 API key 的请求"""
     key_value: Optional[str] = Field(None, min_length=1)
     description: Optional[str] = None
     is_active: Optional[bool] = None
 
 
 class ApiKeyResponse(BaseModel):
-    """Complete API key response"""
+    """完整的 API key 响应"""
     id: int
     provider: str
     key_value: str
@@ -272,7 +272,7 @@ class ApiKeyResponse(BaseModel):
 
 
 class ApiKeySummaryResponse(BaseModel):
-    """API key response without the actual key value"""
+    """不包含实际 key 值的 API key 响应"""
     id: int
     provider: str
     is_active: bool
@@ -280,12 +280,12 @@ class ApiKeySummaryResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
     last_used: Optional[datetime]
-    has_key: bool = True  # Indicates if a key is set
+    has_key: bool = True  # 表示是否已设置 key
 
     class Config:
         from_attributes = True
 
 
 class ApiKeyBulkUpdateRequest(BaseModel):
-    """Request to update multiple API keys at once"""
+    """一次性更新多个 API keys 的请求"""
     api_keys: List[ApiKeyCreateRequest]

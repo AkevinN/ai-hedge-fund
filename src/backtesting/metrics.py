@@ -6,14 +6,14 @@ from .types import PerformanceMetrics, PortfolioValuePoint
 
 
 class PerformanceMetricsCalculator:
-    """Concrete metrics calculator like sharpe ratio, sortino ratio, max drawdown, etc."""
+    """具体的指标计算器，如夏普比率、索提诺比率、最大回撤等。"""
 
     def __init__(self, *, annual_trading_days: int = 252, annual_rf_rate: float = 0.0434) -> None:
         self.annual_trading_days = annual_trading_days
         self.annual_rf_rate = annual_rf_rate
 
     def update_metrics(self, metrics: PerformanceMetrics, values: Sequence[PortfolioValuePoint]) -> None:
-        """Deprecated: mutate provided dict. Kept for backward compatibility."""
+        """已弃用：修改提供的字典。保留用于向后兼容。"""
         computed = self.compute_metrics(values)
         if not computed:
             return

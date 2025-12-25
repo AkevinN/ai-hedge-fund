@@ -25,7 +25,7 @@ export function FlowCreateDialog({ isOpen, onClose, onFlowCreated }: FlowCreateD
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useToastManager();
 
-  // Reset form when dialog opens
+  // 对话框打开时重置表单
   useEffect(() => {
     if (isOpen) {
       setName('');
@@ -35,7 +35,7 @@ export function FlowCreateDialog({ isOpen, onClose, onFlowCreated }: FlowCreateD
 
   const handleCreate = async () => {
     if (!name.trim()) {
-      error('Flow name is required');
+      error('工作流名称为必填项');
       return;
     }
 
@@ -49,12 +49,12 @@ export function FlowCreateDialog({ isOpen, onClose, onFlowCreated }: FlowCreateD
         viewport: { x: 0, y: 0, zoom: 1 },
       });
       
-      success(`"${newFlow.name}" created!`);
+      success(`"${newFlow.name}" 已创建！`);
       onFlowCreated(newFlow);
       onClose();
     } catch (err) {
       console.error('Failed to create flow:', err);
-      error('Failed to create flow');
+      error('创建工作流失败');
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +67,7 @@ export function FlowCreateDialog({ isOpen, onClose, onFlowCreated }: FlowCreateD
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Handle Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+    // 处理 Cmd+Enter (Mac) 或 Ctrl+Enter (Windows/Linux)
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       if (name.trim()) {
@@ -80,52 +80,52 @@ export function FlowCreateDialog({ isOpen, onClose, onFlowCreated }: FlowCreateD
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Flow</DialogTitle>
+          <DialogTitle>创建新工作流</DialogTitle>
           <DialogDescription>
-            Create a new flow with a custom name and description.
+            创建一个具有自定义名称和描述的新工作流。
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <label htmlFor="create-name" className="text-sm font-medium">
-              Name
+              名称
             </label>
             <Input
               id="create-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter flow name"
+              placeholder="输入工作流名称"
               className="col-span-3"
               autoFocus
             />
           </div>
-          
+
           <div className="grid gap-2">
             <label htmlFor="create-description" className="text-sm font-medium">
-              Description
+              描述
             </label>
             <Input
               id="create-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter flow description (optional)"
+              placeholder="输入工作流描述（可选）"
               className="col-span-3"
             />
           </div>
         </div>
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
-            Cancel
+            取消
           </Button>
-          <Button 
-            onClick={handleCreate} 
+          <Button
+            onClick={handleCreate}
             disabled={isLoading || !name.trim()}
           >
-            {isLoading ? 'Creating...' : 'Create Flow'}
+            {isLoading ? '创建中...' : '创建工作流'}
           </Button>
         </DialogFooter>
       </DialogContent>

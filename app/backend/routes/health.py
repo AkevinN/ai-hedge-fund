@@ -8,20 +8,20 @@ router = APIRouter()
 
 @router.get("/")
 async def root():
-    return {"message": "Welcome to AI Hedge Fund API"}
+    return {"message": "欢迎使用AI对冲基金API"}
 
 
 @router.get("/ping")
 async def ping():
     async def event_generator():
         for i in range(5):
-            # Create a JSON object for each ping
+            # 为每次ping创建一个JSON对象
             data = {"ping": f"ping {i+1}/5", "timestamp": i + 1}
 
-            # Format as SSE
+            # 格式化为SSE
             yield f"data: {json.dumps(data)}\n\n"
 
-            # Wait 1 second
+            # 等待1秒
             await asyncio.sleep(1)
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

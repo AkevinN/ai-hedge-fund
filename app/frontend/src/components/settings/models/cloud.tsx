@@ -65,7 +65,7 @@ export function CloudModels({ className }: CloudModelsProps) {
           <div className="flex items-start gap-3">
             <Cloud className="h-5 w-5 text-red-500 mt-0.5" />
             <div>
-              <h4 className="font-medium text-red-300">Error</h4>
+              <h4 className="font-medium text-red-300">错误</h4>
               <p className="text-sm text-red-500 mt-1">{error}</p>
             </div>
           </div>
@@ -75,16 +75,16 @@ export function CloudModels({ className }: CloudModelsProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-medium text-primary
-          ">Available Models</h3>
+          ">可用模型</h3>
           <span className="text-xs text-muted-foreground">
-            {allModels.length} models from {providers.length} providers
+            来自 {providers.length} 个提供商的 {allModels.length} 个模型
           </span>
         </div>
 
         {loading ? (
           <div className="text-center py-8">
             <RefreshCw className="h-8 w-8 mx-auto mb-2 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Loading cloud models...</p>
+            <p className="text-sm text-muted-foreground">正在加载云端模型...</p>
           </div>
         ) : allModels.length > 0 ? (
           <div className="space-y-1">
@@ -116,7 +116,7 @@ export function CloudModels({ className }: CloudModelsProps) {
           !loading && (
             <div className="text-center py-8 text-muted-foreground">
               <Cloud className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No models available</p>
+              <p className="text-sm">暂无可用模型</p>
             </div>
           )
         )}

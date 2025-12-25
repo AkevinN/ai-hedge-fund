@@ -6,9 +6,9 @@ from .portfolio import Portfolio
 
 
 def calculate_portfolio_value(portfolio: Portfolio, current_prices: Mapping[str, float]) -> float:
-    """Compute total portfolio value identical to Backtester.calculate_portfolio_value.
+    """计算总投资组合价值，与 Backtester.calculate_portfolio_value 相同。
 
-    total_value = cash + market value of longs - market value of shorts
+    total_value = 现金 + 多头市值 - 空头市值
     """
     total_value = portfolio.get_cash()
     positions = portfolio.get_positions()
@@ -22,9 +22,9 @@ def calculate_portfolio_value(portfolio: Portfolio, current_prices: Mapping[str,
 
 
 def compute_exposures(portfolio: Portfolio, current_prices: Mapping[str, float]) -> Dict[str, float]:
-    """Compute long/short/gross/net exposures and long/short ratio.
+    """计算多头/空头/总/净敞口和多空比率。
 
-    Mirrors the calculations performed in src/backtester.py run loop.
+    镜像 src/backtester.py 运行循环中执行的计算。
     """
     positions = portfolio.get_positions()
     long_exposure = 0.0
@@ -58,10 +58,10 @@ def compute_portfolio_summary(
     initial_value: float | None,
     performance_metrics: _MappingAny[str, float | None],
 ) -> Dict[str, float | None]:
-    """Compute portfolio summary fields in a pure, testable function.
+    """在纯函数中计算投资组合汇总字段，可测试。
 
-    Returns a dict with keys matching the arguments used by format_backtest_row
-    for the summary row (excluding is_summary and date-specific fields).
+    返回一个字典，其键匹配 format_backtest_row 用于汇总行的参数
+    （不包括 is_summary 和日期特定字段）。
     """
     cash_balance = portfolio.get_cash()
     total_position_value = total_value - cash_balance

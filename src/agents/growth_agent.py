@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-"""Growth Agent
+"""成长Agent
 
-Implements a growth-focused valuation methodology.
+实现以增长为重点的估值方法。
 """
 
 import json
@@ -17,7 +17,7 @@ from src.tools.api import (
 )
 
 def growth_analyst_agent(state: AgentState, agent_id: str = "growth_analyst_agent"):
-    """Run growth analysis across tickers and write signals back to `state`."""
+    """对各个股票运行成长分析并将信号写回到`state`。"""
 
     data = state["data"]
     end_date = data["end_date"]
@@ -26,23 +26,23 @@ def growth_analyst_agent(state: AgentState, agent_id: str = "growth_analyst_agen
     growth_analysis: dict[str, dict] = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial data")
+        progress.update_status(agent_id, ticker, "获取财务数据")
 
-        # --- Historical financial metrics ---
+        # --- 历史财务指标 ---
         financial_metrics = get_financial_metrics(
             ticker=ticker,
             end_date=end_date,
             period="ttm",
-            limit=12, # 3 years of ttm data
+            limit=12, # 3年TTM数据
             api_key=api_key,
         )
         if not financial_metrics or len(financial_metrics) < 4:
-            progress.update_status(agent_id, ticker, "Failed: Not enough financial metrics")
+            progress.update_status(agent_id, ticker, "失败：财务指标数据不足")
             continue
-        
+
         most_recent_metrics = financial_metrics[0]
 
-        # --- Insider Trades ---
+        # --- 内部人交易 ---
         insider_trades = get_insider_trades(
             ticker=ticker,
             end_date=end_date,
@@ -117,17 +117,17 @@ def growth_analyst_agent(state: AgentState, agent_id: str = "growth_analyst_agen
             "confidence": confidence,
             "reasoning": reasoning,
         }
-        progress.update_status(agent_id, ticker, "Done", analysis=json.dumps(reasoning, indent=4))
+        progress.update_status(agent_id, ticker, "完成", analysis=json.dumps(reasoning, indent=4))
 
-    # ---- Emit message (for LLM tool chain) ----
+    # ---- 发出消息（供LLM工具链使用） ----
     msg = HumanMessage(content=json.dumps(growth_analysis), name=agent_id)
     if state["metadata"].get("show_reasoning"):
         show_agent_reasoning(growth_analysis, "Growth Analysis Agent")
 
-    # Add the signal to the analyst_signals list
+    # 将信号添加到分析师信号列表
     state["data"]["analyst_signals"][agent_id] = growth_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
     
     return {"messages": [msg], "data": data}
 

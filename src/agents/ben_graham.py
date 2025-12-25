@@ -19,11 +19,11 @@ class BenGrahamSignal(BaseModel):
 
 def ben_graham_agent(state: AgentState, agent_id: str = "ben_graham_agent"):
     """
-    Analyzes stocks using Benjamin Graham's classic value-investing principles:
-    1. Earnings stability over multiple years.
-    2. Solid financial strength (low debt, adequate liquidity).
-    3. Discount to intrinsic value (e.g. Graham Number or net-net).
-    4. Adequate margin of safety.
+    使用本杰明·格雷厄姆的经典价值投资原则分析股票：
+    1. 多年的盈利稳定性。
+    2. 坚实的财务实力（低债务、充足的流动性）。
+    3. 相对内在价值的折扣（例如格雷厄姆数或净净值）。
+    4. 充足的安全边际。
     """
     data = state["data"]
     end_date = data["end_date"]
@@ -34,23 +34,23 @@ def ben_graham_agent(state: AgentState, agent_id: str = "ben_graham_agent"):
     graham_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="annual", limit=10, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
         financial_line_items = search_line_items(ticker, ["earnings_per_share", "revenue", "net_income", "book_value_per_share", "total_assets", "total_liabilities", "current_assets", "current_liabilities", "dividends_and_other_cash_distributions", "outstanding_shares"], end_date, period="annual", limit=10, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        # Perform sub-analyses
-        progress.update_status(agent_id, ticker, "Analyzing earnings stability")
+        # 执行子分析
+        progress.update_status(agent_id, ticker, "分析盈利稳定性")
         earnings_analysis = analyze_earnings_stability(metrics, financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing financial strength")
+        progress.update_status(agent_id, ticker, "分析财务实力")
         strength_analysis = analyze_financial_strength(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing Graham valuation")
+        progress.update_status(agent_id, ticker, "分析格雷厄姆估值")
         valuation_analysis = analyze_valuation_graham(financial_line_items, market_cap)
 
         # Aggregate scoring
@@ -67,7 +67,7 @@ def ben_graham_agent(state: AgentState, agent_id: str = "ben_graham_agent"):
 
         analysis_data[ticker] = {"signal": signal, "score": total_score, "max_score": max_possible_score, "earnings_analysis": earnings_analysis, "strength_analysis": strength_analysis, "valuation_analysis": valuation_analysis}
 
-        progress.update_status(agent_id, ticker, "Generating Ben Graham analysis")
+        progress.update_status(agent_id, ticker, "生成Ben Graham分析")
         graham_output = generate_graham_output(
             ticker=ticker,
             analysis_data=analysis_data,
@@ -77,19 +77,19 @@ def ben_graham_agent(state: AgentState, agent_id: str = "ben_graham_agent"):
 
         graham_analysis[ticker] = {"signal": graham_output.signal, "confidence": graham_output.confidence, "reasoning": graham_output.reasoning}
 
-        progress.update_status(agent_id, ticker, "Done", analysis=graham_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=graham_output.reasoning)
 
-    # Wrap results in a single message for the chain
+    # 将结果包装在单个消息中供链使用
     message = HumanMessage(content=json.dumps(graham_analysis), name=agent_id)
 
-    # Optionally display reasoning
+    # 可选地显示推理过程
     if state["metadata"]["show_reasoning"]:
         show_agent_reasoning(graham_analysis, "Ben Graham Agent")
 
-    # Store signals in the overall state
+    # 在整体状态中存储信号
     state["data"]["analyst_signals"][agent_id] = graham_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {"messages": [message], "data": state["data"]}
 

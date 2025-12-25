@@ -18,11 +18,11 @@ class CathieWoodSignal(BaseModel):
 
 def cathie_wood_agent(state: AgentState, agent_id: str = "cathie_wood_agent"):
     """
-    Analyzes stocks using Cathie Wood's investing principles and LLM reasoning.
-    1. Prioritizes companies with breakthrough technologies or business models
-    2. Focuses on industries with rapid adoption curves and massive TAM (Total Addressable Market).
-    3. Invests mostly in AI, robotics, genomic sequencing, fintech, and blockchain.
-    4. Willing to endure short-term volatility for long-term gains.
+    使用Cathie Wood的投资原则和LLM推理分析股票。
+    1. 优先考虑具有突破性技术或商业模式的公司
+    2. 专注于具有快速采用曲线和巨大TAM（总可寻址市场）的行业。
+    3. 主要投资于AI、机器人、基因测序、金融科技和区块链。
+    4. 愿意承受短期波动以获得长期收益。
     """
     data = state["data"]
     end_date = data["end_date"]
@@ -32,11 +32,11 @@ def cathie_wood_agent(state: AgentState, agent_id: str = "cathie_wood_agent"):
     cw_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="annual", limit=5, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
-        # Request multiple periods of data (annual or TTM) for a more robust view.
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
+        # 请求多个时期的数据（年度或TTM）以获得更全面的视图。
         financial_line_items = search_line_items(
             ticker,
             [
@@ -59,16 +59,16 @@ def cathie_wood_agent(state: AgentState, agent_id: str = "cathie_wood_agent"):
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Analyzing disruptive potential")
+        progress.update_status(agent_id, ticker, "分析颠覆性潜力")
         disruptive_analysis = analyze_disruptive_potential(metrics, financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing innovation-driven growth")
+        progress.update_status(agent_id, ticker, "分析创新驱动增长")
         innovation_analysis = analyze_innovation_growth(metrics, financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Calculating valuation & high-growth scenario")
+        progress.update_status(agent_id, ticker, "计算估值及高增长场景")
         valuation_analysis = analyze_cathie_wood_valuation(financial_line_items, market_cap)
 
         # Combine partial scores or signals
@@ -84,7 +84,7 @@ def cathie_wood_agent(state: AgentState, agent_id: str = "cathie_wood_agent"):
 
         analysis_data[ticker] = {"signal": signal, "score": total_score, "max_score": max_possible_score, "disruptive_analysis": disruptive_analysis, "innovation_analysis": innovation_analysis, "valuation_analysis": valuation_analysis}
 
-        progress.update_status(agent_id, ticker, "Generating Cathie Wood analysis")
+        progress.update_status(agent_id, ticker, "生成Cathie Wood分析")
         cw_output = generate_cathie_wood_output(
             ticker=ticker,
             analysis_data=analysis_data,
@@ -94,7 +94,7 @@ def cathie_wood_agent(state: AgentState, agent_id: str = "cathie_wood_agent"):
 
         cw_analysis[ticker] = {"signal": cw_output.signal, "confidence": cw_output.confidence, "reasoning": cw_output.reasoning}
 
-        progress.update_status(agent_id, ticker, "Done", analysis=cw_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=cw_output.reasoning)
 
     message = HumanMessage(content=json.dumps(cw_analysis), name=agent_id)
 
@@ -103,7 +103,7 @@ def cathie_wood_agent(state: AgentState, agent_id: str = "cathie_wood_agent"):
 
     state["data"]["analyst_signals"][agent_id] = cw_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {"messages": [message], "data": state["data"]}
 

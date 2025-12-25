@@ -19,7 +19,7 @@ export function ComponentItemGroup({
     try {
       await addComponentToFlow(componentName);
     } catch (error) {
-      console.error('Failed to add component to flow:', error);
+      console.error('添加组件到流程失败:', error);
     }
   };
   

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { getActionColor, getDisplayName, getSignalColor, getStatusIcon } from './output-tab-utils';
 import { ReasoningContent } from './reasoning-content';
 
-// Progress Section Component
+// 进度区块组件
 function ProgressSection({ sortedAgents }: { sortedAgents: [string, any][] }) {
   if (sortedAgents.length === 0) return null;
 
@@ -45,7 +45,7 @@ function ProgressSection({ sortedAgents }: { sortedAgents: [string, any][] }) {
   );
 }
 
-// Summary Section Component
+// 摘要区块组件
 function SummarySection({ outputData }: { outputData: any }) {
   if (!outputData) return null;
 
@@ -84,22 +84,22 @@ function SummarySection({ outputData }: { outputData: any }) {
   );
 }
 
-// Analysis Results Section Component
+// 分析结果区块组件
 function AnalysisResultsSection({ outputData }: { outputData: any }) {
-  // Always call hooks at the top of the function
+  // 始终在函数顶部调用钩子
   const [selectedTicker, setSelectedTicker] = useState<string>('');
-  
-  // Calculate tickers (safe to do even if outputData is null)
+
+  // 计算股票列表（即使 outputData 为 null 也安全）
   const tickers = outputData?.decisions ? Object.keys(outputData.decisions) : [];
-  
-  // Set default selected ticker
+
+  // 设置默认选中的股票
   useEffect(() => {
     if (tickers.length > 0 && !selectedTicker) {
       setSelectedTicker(tickers[0]);
     }
   }, [tickers, selectedTicker]);
 
-  // Early returns after all hooks are called
+  // 在所有钩子调用后执行提前返回
   if (!outputData) return null;
   if (tickers.length === 0) return null;
 
@@ -127,7 +127,7 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
             
             return (
               <TabsContent key={ticker} value={ticker} className="space-y-4">
-                {/* Agent Analysis */}
+                {/* 代理分析 */}
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -167,8 +167,8 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
                       })}
                   </TableBody>
                 </Table>
-                
-                {/* Trading Decision */}
+
+                {/* 交易决策 */}
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -212,7 +212,7 @@ function AnalysisResultsSection({ outputData }: { outputData: any }) {
   );
 }
 
-// Main component for regular output
+// 常规输出的主组件
 export function RegularOutput({ 
   sortedAgents, 
   outputData 

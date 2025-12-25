@@ -4,13 +4,13 @@ import { cn } from '@/lib/utils';
 import { MoreHorizontal } from 'lucide-react';
 import { getActionColor } from './output-tab-utils';
 
-// Component for displaying backtest progress
+// 用于显示回测进度的组件
 function BacktestProgress({ agentData }: { agentData: Record<string, any> }) {
   const backtestAgent = agentData['backtest'];
-  
+
   if (!backtestAgent) return null;
-  
-  // Get the latest backtest result from the backtest results array
+
+  // 从回测结果数组中获取最新的回测结果
   const backtestResults = backtestAgent.backtestResults || [];
   const latestBacktestResult = backtestResults.length > 0 ? backtestResults[backtestResults.length - 1] : null;
   
@@ -21,7 +21,7 @@ function BacktestProgress({ agentData }: { agentData: Record<string, any> }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* Current Status */}
+          {/* 当前状态 */}
           <div className="flex items-center gap-2">
             <MoreHorizontal className="h-4 w-4 text-yellow-500" />
             <span className="font-medium">回测运行器</span>
@@ -33,28 +33,28 @@ function BacktestProgress({ agentData }: { agentData: Record<string, any> }) {
   );
 }
 
-// Component for displaying backtest trading table (similar to CLI)
+// 用于显示回测交易表格的组件（类似于 CLI）
 function BacktestTradingTable({ agentData }: { agentData: Record<string, any> }) {
   const backtestAgent = agentData['backtest'];
 
   // console.log("backtestAgent", backtestAgent);
-  
+
   if (!backtestAgent || !backtestAgent.backtestResults) {
     return null;
   }
-    
-  // Get the backtest results directly from the agent data
+
+  // 直接从代理数据中获取回测结果
   const backtestResults = backtestAgent.backtestResults || [];
   
   if (backtestResults.length === 0) {
     return null;
   }
-  
-  // Build table rows similar to CLI format
+
+  // 构建类似 CLI 格式的表格行
   const tableRows: any[] = [];
-  
-  backtestResults.forEach((backtestResult: any) => {    
-    // Add ticker rows for this period
+
+  backtestResults.forEach((backtestResult: any) => {
+    // 为此周期添加股票行
     if (backtestResult.ticker_details) {
       backtestResult.ticker_details.forEach((ticker: any) => {
         tableRows.push({
@@ -74,8 +74,8 @@ function BacktestTradingTable({ agentData }: { agentData: Record<string, any> })
         });
       });
     }
-    
-    // Add portfolio summary row for this period
+
+    // 为此周期添加投资组合摘要行
     tableRows.push({
       type: 'summary',
       date: backtestResult.date,
@@ -86,8 +86,8 @@ function BacktestTradingTable({ agentData }: { agentData: Record<string, any> })
       performance_metrics: backtestResult.performance_metrics,
     });
   });
-    
-  // Sort by date descending (newest first) and show only the last 50 rows to avoid performance issues
+
+  // 按日期降序排序（最新的在前）并仅显示最后 50 行以避免性能问题
   const recentRows = tableRows
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 50);
@@ -150,7 +150,7 @@ function BacktestTradingTable({ agentData }: { agentData: Record<string, any> })
   );
 }
 
-// Component for displaying backtest results
+// 用于显示回测结果的组件
 function BacktestResults({ outputData }: { outputData: any }) {
   if (!outputData) {
     return null;
@@ -182,7 +182,7 @@ function BacktestResults({ outputData }: { outputData: any }) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {/* Performance Metrics */}
+          {/* 性能指标 */}
           <div className="space-y-2">
             <h4 className="font-medium">性能指标</h4>
             <div className="space-y-1 text-sm">
@@ -212,8 +212,8 @@ function BacktestResults({ outputData }: { outputData: any }) {
               )}
             </div>
           </div>
-          
-          {/* Portfolio Summary */}
+
+          {/* 投资组合摘要 */}
           <div className="space-y-2">
             <h4 className="font-medium">投资组合摘要</h4>
             <div className="space-y-1 text-sm">
@@ -231,10 +231,10 @@ function BacktestResults({ outputData }: { outputData: any }) {
               </div>
             </div>
           </div>
-          
-          {/* Exposure Metrics */}
+
+          {/* 暴露指标 */}
           <div className="space-y-2">
-            <h4 className="font-medium">暂露指标</h4>
+            <h4 className="font-medium">暴露指标</h4>
             <div className="space-y-1 text-sm">
               {performance_metrics.gross_exposure !== null && performance_metrics.gross_exposure !== undefined && (
                 <div className="flex justify-between">
@@ -259,8 +259,8 @@ function BacktestResults({ outputData }: { outputData: any }) {
             </div>
           </div>
         </div>
-        
-        {/* Final Positions */}
+
+        {/* 最终持仓 */}
         {final_portfolio.positions && (
           <div>
             <h4 className="font-medium mb-2">最终持仓</h4>
@@ -297,35 +297,35 @@ function BacktestResults({ outputData }: { outputData: any }) {
   );
 }
 
-// Component for displaying real-time backtest performance
+// 用于显示实时回测性能的组件
 function BacktestPerformanceMetrics({ agentData }: { agentData: Record<string, any> }) {
   const backtestAgent = agentData['backtest'];
-  
+
   if (!backtestAgent || !backtestAgent.backtestResults) return null;
-  
-  // Get the backtest results directly from the agent data
+
+  // 直接从代理数据中获取回测结果
   const backtestResults = backtestAgent.backtestResults || [];
   
   if (backtestResults.length === 0) return null;
   
   const firstPeriod = backtestResults[0];
   const latestPeriod = backtestResults[backtestResults.length - 1];
-  
-  // Calculate performance metrics
+
+  // 计算性能指标
   const initialValue = firstPeriod.portfolio_value;
   const currentValue = latestPeriod.portfolio_value;
   const totalReturn = ((currentValue - initialValue) / initialValue) * 100;
-  
-  // Calculate win rate (periods with positive returns)
+
+  // 计算胜率（正收益周期）
   const periodReturns = backtestResults.slice(1).map((period: any, idx: number) => {
     const prevPeriod = backtestResults[idx];
     return ((period.portfolio_value - prevPeriod.portfolio_value) / prevPeriod.portfolio_value) * 100;
   });
-  
+
   const winningPeriods = periodReturns.filter((ret: number) => ret > 0).length;
   const winRate = periodReturns.length > 0 ? (winningPeriods / periodReturns.length) * 100 : 0;
-  
-  // Calculate max drawdown
+
+  // 计算最大回撤
   let maxDrawdown = 0;
   let peak = initialValue;
   
@@ -365,8 +365,8 @@ function BacktestPerformanceMetrics({ agentData }: { agentData: Record<string, a
             <div className="font-sm">{backtestResults.length}</div>
           </div>
         </div>
-        
-        {/* Additional metrics */}
+
+        {/* 额外指标 */}
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <div className="text-xs text-muted-foreground">当前价值</div>
@@ -394,7 +394,7 @@ function BacktestPerformanceMetrics({ agentData }: { agentData: Record<string, a
   );
 }
 
-// Main component for backtest output
+// 回测输出的主组件
 export function BacktestOutput({ 
   agentData, 
   outputData 

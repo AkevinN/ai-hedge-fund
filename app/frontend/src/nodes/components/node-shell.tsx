@@ -66,7 +66,7 @@ export function NodeShell({
               {icon}
             </div>
             <div className="text-title font-semibold text-primary">
-              {name || "Custom Component"}
+              {name || "自定义组件"}
             </div>
           </CardHeader>
           {description && (

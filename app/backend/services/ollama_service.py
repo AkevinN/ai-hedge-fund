@@ -17,22 +17,22 @@ import ollama
 logger = logging.getLogger(__name__)
 
 class OllamaService:
-    """Service for managing Ollama integration in the backend."""
-    
+    """用于在后端管理Ollama集成的服务"""
+
     def __init__(self):
         self._download_progress = {}
         self._download_processes = {}
-        
-        # Initialize async client
+
+        # 初始化异步客户端
         self._async_client = ollama.AsyncClient()
         self._sync_client = ollama.Client()
-    
+
     # =============================================================================
-    # PUBLIC API METHODS
+    # 公共API方法
     # =============================================================================
-    
+
     async def check_ollama_status(self) -> Dict[str, any]:
-        """Check Ollama installation and server status."""
+        """检查Ollama安装和服务器状态"""
         try:
             is_installed = await self._check_installation()
             is_running = await self._check_server_running()
@@ -55,60 +55,60 @@ class OllamaService:
             return self._create_error_status(str(e))
     
     async def start_server(self) -> Dict[str, any]:
-        """Start the Ollama server."""
+        """启动Ollama服务器"""
         try:
             success = await self._execute_server_start()
-            
-            message = "Ollama server started successfully" if success else "Failed to start Ollama server"
+
+            message = "Ollama服务器启动成功" if success else "启动Ollama服务器失败"
             return {"success": success, "message": message}
-                
+
         except Exception as e:
-            logger.error(f"Error starting Ollama server: {e}")
-            return {"success": False, "message": f"Error starting server: {str(e)}"}
-    
+            logger.error(f"启动Ollama服务器时出错: {e}")
+            return {"success": False, "message": f"启动服务器时出错: {str(e)}"}
+
     async def stop_server(self) -> Dict[str, any]:
-        """Stop the Ollama server."""
+        """停止Ollama服务器"""
         try:
             success = await self._execute_server_stop()
-            
-            message = "Ollama server stopped successfully" if success else "Failed to stop Ollama server"
+
+            message = "Ollama服务器停止成功" if success else "停止Ollama服务器失败"
             return {"success": success, "message": message}
-                
+
         except Exception as e:
-            logger.error(f"Error stopping Ollama server: {e}")
-            return {"success": False, "message": f"Error stopping server: {str(e)}"}
-    
+            logger.error(f"停止Ollama服务器时出错: {e}")
+            return {"success": False, "message": f"停止服务器时出错: {str(e)}"}
+
     async def download_model(self, model_name: str) -> Dict[str, any]:
-        """Download an Ollama model."""
+        """下载Ollama模型"""
         try:
             success = await self._execute_model_download(model_name)
-            
-            message = f"Model {model_name} downloaded successfully" if success else f"Failed to download model {model_name}"
+
+            message = f"模型 {model_name} 下载成功" if success else f"下载模型 {model_name} 失败"
             return {"success": success, "message": message}
-                
+
         except Exception as e:
-            logger.error(f"Error downloading model {model_name}: {e}")
-            return {"success": False, "message": f"Error downloading model: {str(e)}"}
-    
+            logger.error(f"下载模型 {model_name} 时出错: {e}")
+            return {"success": False, "message": f"下载模型时出错: {str(e)}"}
+
     async def download_model_with_progress(self, model_name: str) -> AsyncGenerator[str, None]:
-        """Download an Ollama model with progress streaming."""
+        """下载Ollama模型并流式传输进度"""
         async for progress_data in self._stream_model_download(model_name):
             yield progress_data
-    
+
     async def delete_model(self, model_name: str) -> Dict[str, any]:
-        """Delete an Ollama model."""
+        """删除Ollama模型"""
         try:
             success = await self._execute_model_deletion(model_name)
-            
-            message = f"Model {model_name} deleted successfully" if success else f"Failed to delete model {model_name}"
+
+            message = f"模型 {model_name} 删除成功" if success else f"删除模型 {model_name} 失败"
             return {"success": success, "message": message}
-                
+
         except Exception as e:
-            logger.error(f"Error deleting model {model_name}: {e}")
-            return {"success": False, "message": f"Error deleting model: {str(e)}"}
-    
+            logger.error(f"删除模型 {model_name} 时出错: {e}")
+            return {"success": False, "message": f"删除模型时出错: {str(e)}"}
+
     async def get_recommended_models(self) -> List[Dict[str, str]]:
-        """Get list of recommended Ollama models."""
+        """获取推荐的Ollama模型列表"""
         try:
             models_path = self._get_ollama_models_path()
             
@@ -122,12 +122,12 @@ class OllamaService:
             return []
     
     async def get_available_models(self) -> List[Dict[str, str]]:
-        """Get available Ollama models formatted for the language models API.
-        
-        Returns only models that are:
-        1. Server is running
-        2. Model is downloaded locally  
-        3. Model is in our recommended list (OLLAMA_MODELS)
+        """获取格式化为语言模型API的可用Ollama模型。
+
+        仅返回符合以下条件的模型：
+        1. 服务器正在运行
+        2. 模型已在本地下载
+        3. 模型在我们的推荐列表中 (OLLAMA_MODELS)
         """
         try:
             status = await self.check_ollama_status()
@@ -150,34 +150,34 @@ class OllamaService:
             return []  # Return empty list on error to not break the API
     
     def get_download_progress(self, model_name: str) -> Optional[Dict[str, any]]:
-        """Get current download progress for a model."""
+        """获取模型的当前下载进度"""
         return self._download_progress.get(model_name)
-    
+
     def get_all_download_progress(self) -> Dict[str, Dict[str, any]]:
-        """Get current download progress for all models."""
+        """获取所有模型的当前下载进度"""
         return self._download_progress.copy()
-    
+
     def cancel_download(self, model_name: str) -> bool:
-        """Cancel an active download."""
-        logger.warning(f"Download cancellation not directly supported by ollama client for model: {model_name}")
+        """取消活动下载"""
+        logger.warning(f"ollama客户端不直接支持取消下载模型: {model_name}")
         
         if model_name in self._download_progress:
             self._download_progress[model_name] = {
                 "status": "cancelled",
-                "message": f"Download of {model_name} was cancelled",
-                "error": "Download cancelled by user"
+                "message": f"{model_name} 的下载已取消",
+                "error": "用户取消下载"
             }
             return True
-        
+
         return False
-    
+
     # =============================================================================
-    # PRIVATE HELPER METHODS
+    # 私有辅助方法
     # =============================================================================
-    
+
 
     def _create_error_status(self, error: str) -> Dict[str, any]:
-        """Create error status response."""
+        """创建错误状态响应"""
         return {
             "installed": False,
             "running": False,

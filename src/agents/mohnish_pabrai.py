@@ -17,7 +17,7 @@ class MohnishPabraiSignal(BaseModel):
 
 
 def mohnish_pabrai_agent(state: AgentState, agent_id: str = "mohnish_pabrai_agent"):
-    """Evaluate stocks using Mohnish Pabrai's checklist and 'heads I win, tails I don't lose much' approach."""
+    """使用Mohnish Pabrai's checklist and 'heads I win, tails I don't lose much' approach."""
     data = state["data"]
     end_date = data["end_date"]
     tickers = data["tickers"]
@@ -29,10 +29,10 @@ def mohnish_pabrai_agent(state: AgentState, agent_id: str = "mohnish_pabrai_agen
     # Pabrai focuses on: downside protection, simple business, moat via unit economics, FCF yield vs alternatives,
     # and potential for doubling in 2-3 years at low risk.
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
+        progress.update_status(agent_id, ticker, "获取财务指标")
         metrics = get_financial_metrics(ticker, end_date, period="annual", limit=8, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
         line_items = search_line_items(
             ticker,
             [
@@ -62,16 +62,16 @@ def mohnish_pabrai_agent(state: AgentState, agent_id: str = "mohnish_pabrai_agen
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Analyzing downside protection")
+        progress.update_status(agent_id, ticker, "分析下行保护")
         downside = analyze_downside_protection(line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing cash yield and valuation")
+        progress.update_status(agent_id, ticker, "分析现金收益率和估值")
         valuation = analyze_pabrai_valuation(line_items, market_cap)
 
-        progress.update_status(agent_id, ticker, "Assessing potential to double")
+        progress.update_status(agent_id, ticker, "评估翻倍潜力")
         double_potential = analyze_double_potential(line_items, market_cap)
 
         # Combine to an overall score in spirit of Pabrai: heavily weight downside and cash yield
@@ -99,7 +99,7 @@ def mohnish_pabrai_agent(state: AgentState, agent_id: str = "mohnish_pabrai_agen
             "market_cap": market_cap,
         }
 
-        progress.update_status(agent_id, ticker, "Generating Pabrai analysis")
+        progress.update_status(agent_id, ticker, "生成Pabrai分析")
         pabrai_output = generate_pabrai_output(
             ticker=ticker,
             analysis_data=analysis_data,

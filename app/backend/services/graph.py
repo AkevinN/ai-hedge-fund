@@ -14,27 +14,27 @@ from src.graph.state import AgentState
 
 def extract_base_agent_key(unique_id: str) -> str:
     """
-    Extract the base agent key from a unique node ID.
-    
+    从唯一节点ID中提取基础agent键。
+
     Args:
-        unique_id: The unique node ID with suffix (e.g., "warren_buffett_abc123")
-    
+        unique_id: 带后缀的唯一节点ID（例如 "warren_buffett_abc123"）
+
     Returns:
-        The base agent key (e.g., "warren_buffett")
+        基础agent键（例如 "warren_buffett"）
     """
-    # For agent nodes, remove the last underscore and 6-character suffix
+    # 对于agent节点，删除最后的下划线和6字符后缀
     parts = unique_id.split('_')
     if len(parts) >= 2:
         last_part = parts[-1]
-        # If the last part is a 6-character alphanumeric string, it's likely our suffix
+        # 如果最后一部分是6字符的字母数字字符串，很可能是我们的后缀
         if len(last_part) == 6 and re.match(r'^[a-z0-9]+$', last_part):
             return '_'.join(parts[:-1])
-    return unique_id  # Return original if no suffix pattern found
+    return unique_id  # 如果未找到后缀模式，返回原始值
 
 
-# Helper function to create the agent graph
+# 创建agent图的辅助函数
 def create_graph(graph_nodes: list, graph_edges: list) -> StateGraph:
-    """Create the workflow based on the React Flow graph structure."""
+    """基于React Flow图结构创建工作流"""
     graph = StateGraph(AgentState)
     graph.add_node("start_node", start)
 
@@ -130,11 +130,11 @@ def create_graph(graph_nodes: list, graph_edges: list) -> StateGraph:
 
 
 async def run_graph_async(graph, portfolio, tickers, start_date, end_date, model_name, model_provider, request=None):
-    """Async wrapper for run_graph to work with asyncio."""
-    # Use run_in_executor to run the synchronous function in a separate thread
-    # so it doesn't block the event loop
+    """run_graph的异步包装器，用于与asyncio配合工作"""
+    # 使用run_in_executor在单独的线程中运行同步函数
+    # 这样它不会阻塞事件循环
     loop = asyncio.get_running_loop()
-    result = await loop.run_in_executor(None, lambda: run_graph(graph, portfolio, tickers, start_date, end_date, model_name, model_provider, request))  # Use default executor
+    result = await loop.run_in_executor(None, lambda: run_graph(graph, portfolio, tickers, start_date, end_date, model_name, model_provider, request))  # 使用默认执行器
     return result
 
 
@@ -149,15 +149,14 @@ def run_graph(
     request=None,
 ) -> dict:
     """
-    Run the graph with the given portfolio, tickers,
-    start date, end date, show reasoning, model name,
-    and model provider.
+    使用给定的投资组合、股票代码、开始日期、结束日期、
+    显示推理、模型名称和模型提供商运行图。
     """
     return graph.invoke(
         {
             "messages": [
                 HumanMessage(
-                    content="Make trading decisions based on the provided data.",
+                    content="根据提供的数据做出交易决策。",
                 )
             ],
             "data": {
@@ -171,22 +170,22 @@ def run_graph(
                 "show_reasoning": False,
                 "model_name": model_name,
                 "model_provider": model_provider,
-                "request": request,  # Pass the request for agent-specific model access
+                "request": request,  # 传递请求以支持agent特定模型访问
             },
         },
     )
 
 
 def parse_hedge_fund_response(response):
-    """Parses a JSON string and returns a dictionary."""
+    """解析JSON字符串并返回字典"""
     try:
         return json.loads(response)
     except json.JSONDecodeError as e:
-        print(f"JSON decoding error: {e}\nResponse: {repr(response)}")
+        print(f"JSON解码错误: {e}\n响应: {repr(response)}")
         return None
     except TypeError as e:
-        print(f"Invalid response type (expected string, got {type(response).__name__}): {e}")
+        print(f"无效的响应类型（期望字符串，得到 {type(response).__name__}）: {e}")
         return None
     except Exception as e:
-        print(f"Unexpected error while parsing response: {e}\nResponse: {repr(response)}")
+        print(f"解析响应时发生意外错误: {e}\n响应: {repr(response)}")
         return None

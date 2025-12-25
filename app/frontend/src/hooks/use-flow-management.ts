@@ -12,19 +12,19 @@ import { Flow } from '@/types/flow';
 import { useCallback, useEffect, useState } from 'react';
 
 export interface UseFlowManagementReturn {
-  // State
+  // 状态
   flows: Flow[];
   searchQuery: string;
   isLoading: boolean;
   openGroups: string[];
   createDialogOpen: boolean;
-  
-  // Computed values
+
+  // 计算值
   filteredFlows: Flow[];
   recentFlows: Flow[];
   templateFlows: Flow[];
-  
-  // Actions
+
+  // 操作
   setSearchQuery: (query: string) => void;
   setOpenGroups: (groups: string[]) => void;
   setCreateDialogOpen: (open: boolean) => void;
@@ -35,71 +35,71 @@ export interface UseFlowManagementReturn {
   handleLoadFlow: (flow: Flow) => Promise<void>;
   handleDeleteFlow: (flow: Flow) => Promise<void>;
   handleRefresh: () => Promise<void>;
-  
-  // Internal functions (for testing/advanced use)
+
+  // 内部函数（用于测试/高级使用）
   loadFlows: () => Promise<void>;
   createDefaultFlow: () => Promise<void>;
 }
 
 export function useFlowManagement(): UseFlowManagementReturn {
-  // Get flow context, node context, and toast manager
+  // 获取 flow context、node context 和 toast manager
   const { saveCurrentFlow, loadFlow, reactFlowInstance, currentFlowId } = useFlowContext();
   const { exportNodeContextData } = useNodeContext();
   const { success, error } = useToastManager();
-  
-  // State for flows
+
+  // Flow 状态
   const [flows, setFlows] = useState<Flow[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [openGroups, setOpenGroups] = useState<string[]>(['recent-flows']);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
-  // Enhanced save function that includes internal node states AND node context data
+  // 增强的保存函数，包含内部节点状态和节点上下文数据
   const saveCurrentFlowWithStates = useCallback(async (): Promise<Flow | null> => {
     try {
-      // Get current nodes from React Flow
+      // 从 React Flow 获取当前节点
       const currentNodes = reactFlowInstance.getNodes();
-      
-      // Get node context data (runtime data: agent status, messages, output data)
+
+      // 获取节点上下文数据（运行时数据：agent 状态、消息、输出数据）
       const flowId = currentFlowId?.toString() || null;
       const nodeContextData = exportNodeContextData(flowId);
-      
-      // Enhance nodes with internal states
+
+      // 用内部状态增强节点
       const nodesWithStates = currentNodes.map((node: any) => {
         const internalState = getNodeInternalState(node.id);
         return {
           ...node,
           data: {
             ...node.data,
-            // Only add internal_state if there is actually state to save
+            // 只有在有实际状态需要保存时才添加 internal_state
             ...(internalState && Object.keys(internalState).length > 0 ? { internal_state: internalState } : {})
           }
         };
       });
 
-      // Temporarily replace nodes in React Flow with enhanced nodes
+      // 临时用增强后的节点替换 React Flow 中的节点
       reactFlowInstance.setNodes(nodesWithStates);
-      
+
       try {
-        // Use the context's save function which handles currentFlowId properly
+        // 使用 context 的保存函数，它会正确处理 currentFlowId
         const savedFlow = await saveCurrentFlow();
-        
+
         if (savedFlow) {
-          // After basic save, update with node context data
+          // 基本保存后，用节点上下文数据更新
           const updatedFlow = await flowService.updateFlow(savedFlow.id, {
             ...savedFlow,
             data: {
               ...savedFlow.data,
-              nodeContextData, // Add runtime data from node context
+              nodeContextData, // 从节点上下文添加运行时数据
             }
           });
-          
+
           return updatedFlow;
         }
-        
+
         return savedFlow;
       } finally {
-        // Restore original nodes (without internal_state in React Flow)
+        // 恢复原始节点（React Flow 中不带 internal_state）
         reactFlowInstance.setNodes(currentNodes);
       }
     } catch (err) {
@@ -108,21 +108,21 @@ export function useFlowManagement(): UseFlowManagementReturn {
     }
   }, [reactFlowInstance, saveCurrentFlow, exportNodeContextData, currentFlowId]);
 
-  // Enhanced load function that restores internal node states AND node context data
+  // 增强的加载函数，恢复内部节点状态和节点上下文数据
   const loadFlowWithStates = useCallback(async (flow: Flow) => {
     try {
-      // First, set the flow ID for node state isolation
+      // 首先，设置 flow ID 用于节点状态隔离
       setNodeStateFlowId(flow.id.toString());
-      
-      // DO NOT clear configuration state when loading flows - useNodeState handles flow isolation automatically
-      // DO NOT reset runtime data when loading flows - preserve all runtime state
-      // Runtime data should only be reset when explicitly starting a new run via the Play button
+
+      // 加载 flow 时不清除配置状态 - useNodeState 自动处理 flow 隔离
+      // 加载 flow 时不重置运行时数据 - 保留所有运行时状态
+      // 运行时数据只应在通过 Play 按钮显式启动新运行时重置
       console.log(`[FlowManagement] Loading flow ${flow.id} (${flow.name}), preserving all state (configuration + runtime)`);
 
-      // Load the flow using the context (this handles currentFlowId, currentFlowName, etc.)
+      // 使用 context 加载 flow（处理 currentFlowId、currentFlowName 等）
       await loadFlow(flow);
 
-      // Then restore internal states for each node (use-node-state data)
+      // 然后为每个节点恢复内部状态（use-node-state 数据）
       if (flow.nodes) {
         flow.nodes.forEach((node: any) => {
           if (node.data?.internal_state) {
@@ -130,32 +130,32 @@ export function useFlowManagement(): UseFlowManagementReturn {
           }
         });
       }
-      
-      // NOTE: We intentionally do NOT restore nodeContextData here
-      // Runtime execution data (messages, analysis, agent status) should start fresh
-      // Only configuration data (tickers, model selections) is restored above
+
+      // 注意：我们有意不在此处恢复 nodeContextData
+      // 运行时执行数据（消息、分析、agent 状态）应该从头开始
+      // 只有上面的配置数据（tickers、模型选择）会被恢复
 
       console.log('Flow loaded with complete state restoration:', flow.name);
     } catch (error) {
       console.error('Failed to load flow with states:', error);
-      throw error; // Re-throw to handle in calling function
+      throw error; // 重新抛出以在调用函数中处理
     }
   }, [loadFlow]);
 
-  // Create default flow for new users
+  // 为新用户创建默认 flow
   const createDefaultFlow = useCallback(async () => {
     try {
       console.log('Creating default flow for new user...');
-      // Get current React Flow state, fallback to empty arrays if nothing exists
+      // 获取当前 React Flow 状态，如果不存在则回退到空数组
       const nodes = reactFlowInstance?.getNodes() || [];
       const edges = reactFlowInstance?.getEdges() || [];
       const viewport = reactFlowInstance?.getViewport() || { x: 0, y: 0, zoom: 1 };
-      
+
       const defaultFlow = await flowService.createDefaultFlow(nodes, edges, viewport);
       console.log('Default flow created:', defaultFlow);
       setFlows([defaultFlow]);
-      
-      // Set the flow ID for node state isolation before loading
+
+      // 在加载之前设置 flow ID 用于节点状态隔离
       setNodeStateFlowId(defaultFlow.id.toString());
       await loadFlowWithStates(defaultFlow);
       console.log('Default flow loaded successfully');
@@ -164,7 +164,7 @@ export function useFlowManagement(): UseFlowManagementReturn {
     }
   }, [reactFlowInstance, loadFlowWithStates]);
 
-  // Load flows from API
+  // 从 API 加载 flows
   const loadFlows = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -172,25 +172,25 @@ export function useFlowManagement(): UseFlowManagementReturn {
       const flowsData = await flowService.getFlows();
       console.log('Loaded flows:', flowsData);
       setFlows(flowsData);
-      
+
       if (flowsData.length === 0) {
-        // Create default flow if user has no flows
+        // 如果用户没有 flows，创建默认 flow
         console.log('No flows found, creating default flow...');
         await createDefaultFlow();
       } else {
-        // Try to restore the last selected flow from localStorage
+        // 尝试从 localStorage 恢复上次选择的 flow
         const lastSelectedFlowId = localStorage.getItem('lastSelectedFlowId');
         let flowToLoad = null;
 
         if (lastSelectedFlowId) {
-          // Try to find the last selected flow
+          // 尝试找到上次选择的 flow
           flowToLoad = flowsData.find(flow => flow.id === parseInt(lastSelectedFlowId));
           if (flowToLoad) {
             console.log('Restoring last selected flow:', flowToLoad.name);
           }
         }
 
-        // If no last selected flow or it doesn't exist anymore, use the most recent
+        // 如果没有上次选择的 flow 或它不再存在，使用最近的 flow
         if (!flowToLoad) {
           flowToLoad = flowsData.reduce((latest, current) => {
             const latestDate = new Date(latest.updated_at || latest.created_at);
@@ -200,7 +200,7 @@ export function useFlowManagement(): UseFlowManagementReturn {
           console.log('Loading most recent flow:', flowToLoad.name);
         }
 
-        // Fetch the full flow data before loading
+        // 在加载之前获取完整的 flow 数据
         const fullFlow = await flowService.getFlow(flowToLoad.id);
         await loadFlowWithStates(fullFlow);
       }
@@ -211,30 +211,30 @@ export function useFlowManagement(): UseFlowManagementReturn {
     }
   }, [createDefaultFlow, loadFlowWithStates]);
 
-  // Load flows on mount
+  // 在挂载时加载 flows
   useEffect(() => {
     loadFlows();
   }, [loadFlows]);
 
-  // Filter flows based on search query
+  // 根据搜索查询过滤 flows
   const filteredFlows = flows.filter(flow =>
     flow.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     flow.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     flow.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Sort flows by updated_at descending, then group them
+  // 按 updated_at 降序排序 flows，然后分组
   const sortedFlows = [...filteredFlows].sort((a, b) => {
     const dateA = new Date(a.updated_at || a.created_at);
     const dateB = new Date(b.updated_at || b.created_at);
     return dateB.getTime() - dateA.getTime();
   });
 
-  // Group flows
+  // 分组 flows
   const recentFlows = sortedFlows.filter(f => !f.is_template).slice(0, 10);
   const templateFlows = sortedFlows.filter(f => f.is_template);
 
-  // Event handlers
+  // 事件处理器
   const handleAccordionChange = useCallback((value: string[]) => {
     setOpenGroups(value);
   }, []);
@@ -244,11 +244,11 @@ export function useFlowManagement(): UseFlowManagementReturn {
   }, []);
 
   const handleFlowCreated = useCallback(async (newFlow: Flow) => {
-    // Load the new flow and remember it
+    // 加载新 flow 并记住它
     await loadFlowWithStates(newFlow);
     localStorage.setItem('lastSelectedFlowId', newFlow.id.toString());
-    
-    // Refresh the flows list to show the new flow
+
+    // 刷新 flows 列表以显示新 flow
     await loadFlows();
   }, [loadFlowWithStates, loadFlows]);
 
@@ -256,9 +256,9 @@ export function useFlowManagement(): UseFlowManagementReturn {
     try {
       const savedFlow = await saveCurrentFlowWithStates();
       if (savedFlow) {
-        // Remember the saved flow
+        // 记住已保存的 flow
         localStorage.setItem('lastSelectedFlowId', savedFlow.id.toString());
-        // Refresh the flows list
+        // 刷新 flows 列表
         await loadFlows();
         success(`"${savedFlow.name}" saved!`, 'flow-save');
       } else {
@@ -272,10 +272,10 @@ export function useFlowManagement(): UseFlowManagementReturn {
 
   const handleLoadFlow = useCallback(async (flow: Flow) => {
     try {
-      // Fetch the full flow data including nodes, edges, and viewport
+      // 获取包括节点、边和视口的完整 flow 数据
       const fullFlow = await flowService.getFlow(flow.id);
       await loadFlowWithStates(fullFlow);
-      // Remember the selected flow
+      // 记住选择的 flow
       localStorage.setItem('lastSelectedFlowId', flow.id.toString());
       console.log('Flow loaded:', fullFlow.name);
     } catch (error) {
@@ -290,14 +290,14 @@ export function useFlowManagement(): UseFlowManagementReturn {
   const handleDeleteFlow = useCallback(async (flow: Flow) => {
     try {
       await flowService.deleteFlow(flow.id);
-      // Clear node states for the deleted flow
+      // 清除已删除 flow 的节点状态
       clearFlowNodeStates(flow.id.toString());
-      // Remove from localStorage if it was the last selected
+      // 如果是上次选择的 flow，从 localStorage 中移除
       const lastSelectedFlowId = localStorage.getItem('lastSelectedFlowId');
       if (lastSelectedFlowId === flow.id.toString()) {
         localStorage.removeItem('lastSelectedFlowId');
       }
-      // Refresh the flows list
+      // 刷新 flows 列表
       await loadFlows();
     } catch (error) {
       console.error('Failed to delete flow:', error);
@@ -305,19 +305,19 @@ export function useFlowManagement(): UseFlowManagementReturn {
   }, [loadFlows]);
 
   return {
-    // State
+    // 状态
     flows,
     searchQuery,
     isLoading,
     openGroups,
     createDialogOpen,
-    
-    // Computed values
+
+    // 计算值
     filteredFlows,
     recentFlows,
     templateFlows,
-    
-    // Actions
+
+    // 操作
     setSearchQuery,
     setOpenGroups,
     setCreateDialogOpen,
@@ -328,8 +328,8 @@ export function useFlowManagement(): UseFlowManagementReturn {
     handleLoadFlow,
     handleDeleteFlow,
     handleRefresh,
-    
-    // Internal functions
+
+    // 内部函数
     loadFlows,
     createDefaultFlow,
   };

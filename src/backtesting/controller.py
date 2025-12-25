@@ -7,7 +7,7 @@ from .portfolio import Portfolio
 
 
 class AgentController:
-    """Responsible for invoking the trading agent and normalizing outputs."""
+    """负责调用交易 agent 并规范化输出。"""
 
     def run_agent(
         self,
@@ -21,7 +21,7 @@ class AgentController:
         model_provider: str,
         selected_analysts: Sequence[str] | None,
     ) -> AgentOutput:
-        # Ensure we pass a plain snapshot dict to preserve legacy expectations
+        # 确保我们传递纯快照字典以保留旧版期望
         if isinstance(portfolio, Portfolio):
             portfolio_payload: PortfolioSnapshot = portfolio.get_snapshot()
         else:
@@ -37,7 +37,7 @@ class AgentController:
             selected_analysts=list(selected_analysts) if selected_analysts is not None else None,
         )
 
-        # Normalize outputs to avoid None/missing keys
+        # 规范化输出以避免 None/缺失键
         decisions_in: Dict[str, Any] = dict(output.get("decisions", {})) if isinstance(output, dict) else {}
         analyst_signals_in: Dict[str, Any] = dict(output.get("analyst_signals", {})) if isinstance(output, dict) else {}
 
@@ -46,7 +46,7 @@ class AgentController:
             d = decisions_in.get(ticker, {})
             action = d.get("action", "hold")
             qty = d.get("quantity", 0)
-            # Basic coercions mirroring Backtester expectations
+            # 基本强制转换，镜像 Backtester 的期望
             try:
                 qty_val = float(qty)
             except Exception:
@@ -57,7 +57,7 @@ class AgentController:
                 action = Action.HOLD.value  # type: ignore[assignment]
             normalized_decisions[ticker] = {"action": action, "quantity": qty_val}  # type: ignore[assignment]
 
-        # Preserve any agent-provided analyst signals without modification
+        # 保留 agent 提供的分析师信号，不做修改
         normalized_output: AgentOutput = {
             "decisions": normalized_decisions,
             "analyst_signals": analyst_signals_in,

@@ -28,7 +28,7 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
   const { success, error } = useToastManager();
   const { updateFlowTabTitle } = useTabsContext();
 
-  // Update form when flow changes
+  // 当工作流变化时更新表单
   useEffect(() => {
     if (flow) {
       setName(flow.name);
@@ -38,7 +38,7 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
 
   const handleSave = async () => {
     if (!flow || !name.trim()) {
-      error('Flow name is required');
+      error('工作流名称为必填项');
       return;
     }
 
@@ -49,15 +49,15 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
         description: description.trim() || undefined,
       });
       
-      // Update the tab title if it's currently open
+      // 如果标签页当前打开，则更新标签页标题
       updateFlowTabTitle(flow.id, name.trim());
-      
-      success(`"${name}" updated!`);
+
+      success(`"${name}" 已更新！`);
       onFlowUpdated();
       onClose();
     } catch (err) {
       console.error('Failed to update flow:', err);
-      error('Failed to update flow');
+      error('更新工作流失败');
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +72,7 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Handle Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+    // 处理 Cmd+Enter (Mac) 或 Ctrl+Enter (Windows/Linux)
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       if (name.trim()) {
@@ -85,51 +85,51 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Flow</DialogTitle>
+          <DialogTitle>编辑工作流</DialogTitle>
           <DialogDescription>
-            Update the name and description for your flow.
+            更新工作流的名称和描述。
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <label htmlFor="name" className="text-sm font-medium">
-              Name
+              名称
             </label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter flow name"
+              placeholder="输入工作流名称"
               className="col-span-3"
             />
           </div>
-          
+
           <div className="grid gap-2">
             <label htmlFor="description" className="text-sm font-medium">
-              Description
+              描述
             </label>
             <Input
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter flow description (optional)"
+              placeholder="输入工作流描述（可选）"
               className="col-span-3"
             />
           </div>
         </div>
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
-            Cancel
+            取消
           </Button>
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={isLoading || !name.trim()}
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {isLoading ? '保存中...' : '保存更改'}
           </Button>
         </DialogFooter>
       </DialogContent>

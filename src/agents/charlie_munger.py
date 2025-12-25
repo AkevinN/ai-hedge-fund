@@ -17,8 +17,8 @@ class CharlieMungerSignal(BaseModel):
 
 def charlie_munger_agent(state: AgentState, agent_id: str = "charlie_munger_agent"):
     """
-    Analyzes stocks using Charlie Munger's investing principles and mental models.
-    Focuses on moat strength, management quality, predictability, and valuation.
+    使用查理·芒格的投资原则和心智模型分析股票。
+    专注于护城河强度、管理质量、可预测性和估值。
     """
     data = state["data"]
     end_date = data["end_date"]
@@ -28,10 +28,10 @@ def charlie_munger_agent(state: AgentState, agent_id: str = "charlie_munger_agen
     munger_analysis = {}
     
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Fetching financial metrics")
-        metrics = get_financial_metrics(ticker, end_date, period="annual", limit=10, api_key=api_key)  # Munger looks at longer periods
-        
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
+        progress.update_status(agent_id, ticker, "获取财务指标")
+        metrics = get_financial_metrics(ticker, end_date, period="annual", limit=10, api_key=api_key)  # 芒格关注更长期的数据
+
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
         financial_line_items = search_line_items(
             ticker,
             [
@@ -56,52 +56,52 @@ def charlie_munger_agent(state: AgentState, agent_id: str = "charlie_munger_agen
             api_key=api_key,
         )
         
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
-        
-        progress.update_status(agent_id, ticker, "Fetching insider trades")
-        # Munger values management with skin in the game
+
+        progress.update_status(agent_id, ticker, "获取内部人交易")
+        # 芒格重视管理层利益一致性
         insider_trades = get_insider_trades(
             ticker,
             end_date,
             limit=100,
             api_key=api_key,
         )
-        
-        progress.update_status(agent_id, ticker, "Fetching company news")
-        # Munger avoids businesses with frequent negative press
+
+        progress.update_status(agent_id, ticker, "获取公司新闻")
+        # 芒格避免频繁负面新闻的企业
         company_news = get_company_news(
             ticker,
             end_date,
             limit=10,
             api_key=api_key,
         )
-        
-        progress.update_status(agent_id, ticker, "Analyzing moat strength")
+
+        progress.update_status(agent_id, ticker, "分析护城河强度")
         moat_analysis = analyze_moat_strength(metrics, financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Analyzing management quality")
+
+        progress.update_status(agent_id, ticker, "分析管理层质量")
         management_analysis = analyze_management_quality(financial_line_items, insider_trades)
-        
-        progress.update_status(agent_id, ticker, "Analyzing business predictability")
+
+        progress.update_status(agent_id, ticker, "分析业务可预测性")
         predictability_analysis = analyze_predictability(financial_line_items)
-        
-        progress.update_status(agent_id, ticker, "Calculating Munger-style valuation")
+
+        progress.update_status(agent_id, ticker, "计算芒格风格估值")
         valuation_analysis = calculate_munger_valuation(financial_line_items, market_cap)
         
-        # Combine partial scores with Munger's weighting preferences
-        # Munger weights quality and predictability higher than current valuation
+        # 结合芒格的权重偏好计算部分得分
+        # 芒格将质量和可预测性的权重设置高于当前估值
         total_score = (
             moat_analysis["score"] * 0.35 +
             management_analysis["score"] * 0.25 +
             predictability_analysis["score"] * 0.25 +
             valuation_analysis["score"] * 0.15
         )
-        
-        max_possible_score = 10  # Scale to 0-10
-                
-        # Generate a simple buy/hold/sell signal
-        if total_score >= 7.5:  # Munger has very high standards
+
+        max_possible_score = 10  # 缩放至0-10
+
+        # 生成简单的买入/持有/卖出信号
+        if total_score >= 7.5:  # 芒格有非常高的标准
             signal = "bullish"
         elif total_score <= 5.5:
             signal = "bearish"
@@ -116,38 +116,38 @@ def charlie_munger_agent(state: AgentState, agent_id: str = "charlie_munger_agen
             "management_analysis": management_analysis,
             "predictability_analysis": predictability_analysis,
             "valuation_analysis": valuation_analysis,
-            # Include some qualitative assessment from news
-            "news_sentiment": analyze_news_sentiment(company_news) if company_news else "No news data available"
+            # 包括从新闻中得出的定性评估
+            "news_sentiment": analyze_news_sentiment(company_news) if company_news else "无新闻数据可用"
         }
-        
-        progress.update_status(agent_id, ticker, "Generating Charlie Munger analysis")
+
+        progress.update_status(agent_id, ticker, "生成Charlie Munger分析")
         munger_output = generate_munger_output(
-            ticker=ticker, 
+            ticker=ticker,
             analysis_data=analysis_data[ticker],
             state=state,
             agent_id=agent_id,
             confidence_hint=compute_confidence(analysis_data[ticker], signal)
         )
-        
+
         munger_analysis[ticker] = {
             "signal": munger_output.signal,
             "confidence": munger_output.confidence,
             "reasoning": munger_output.reasoning
         }
-        
-        progress.update_status(agent_id, ticker, "Done", analysis=munger_output.reasoning)
-    
-    # Wrap results in a single message for the chain
+
+        progress.update_status(agent_id, ticker, "完成", analysis=munger_output.reasoning)
+
+    # 将结果包装在单个消息中供链使用
     message = HumanMessage(
         content=json.dumps(munger_analysis),
         name=agent_id
     )
-    
-    # Show reasoning if requested
+
+    # 如果需要则显示推理过程
     if state["metadata"]["show_reasoning"]:
         show_agent_reasoning(munger_analysis, "Charlie Munger Agent")
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
     
     # Add signals to the overall state
     state["data"]["analyst_signals"][agent_id] = munger_analysis

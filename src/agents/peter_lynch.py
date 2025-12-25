@@ -26,17 +26,17 @@ class PeterLynchSignal(BaseModel):
 
 def peter_lynch_agent(state: AgentState, agent_id: str = "peter_lynch_agent"):
     """
-    Analyzes stocks using Peter Lynch's investing principles:
-      - Invest in what you know (clear, understandable businesses).
-      - Growth at a Reasonable Price (GARP), emphasizing the PEG ratio.
-      - Look for consistent revenue & EPS increases and manageable debt.
-      - Be alert for potential "ten-baggers" (high-growth opportunities).
-      - Avoid overly complex or highly leveraged businesses.
-      - Use news sentiment and insider trades for secondary inputs.
-      - If fundamentals strongly align with GARP, be more aggressive.
+    使用彼得·林奇的投资原则分析股票：
+      - 投资你了解的东西（清晰、可理解的业务）。
+      - 合理价格成长(GARP)，强调PEG比率。
+      - 寻找持续的收入和EPS增长以及可控的债务。
+      - 警惕潜在的"十倍股"（高增长机会）。
+      - 避免过于复杂或高杠杆的企业。
+      - 使用新闻情绪和内部人交易作为次要输入。
+      - 如果基本面与GARP强烈一致，则更加积极。
 
-    The result is a bullish/bearish/neutral signal, along with a
-    confidence (0–100) and a textual reasoning explanation.
+    结果是看涨/看跌/中性信号，以及
+    置信度（0-100）和文本推理解释。
     """
 
     data = state["data"]
@@ -47,8 +47,8 @@ def peter_lynch_agent(state: AgentState, agent_id: str = "peter_lynch_agent"):
     lynch_analysis = {}
 
     for ticker in tickers:
-        progress.update_status(agent_id, ticker, "Gathering financial line items")
-        # Relevant line items for Peter Lynch's approach
+        progress.update_status(agent_id, ticker, "收集财务项目数据")
+        # Peter Lynch方法的相关项目
         financial_line_items = search_line_items(
             ticker,
             [
@@ -71,29 +71,29 @@ def peter_lynch_agent(state: AgentState, agent_id: str = "peter_lynch_agent"):
             api_key=api_key,
         )
 
-        progress.update_status(agent_id, ticker, "Getting market cap")
+        progress.update_status(agent_id, ticker, "获取市值")
         market_cap = get_market_cap(ticker, end_date, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching insider trades")
+        progress.update_status(agent_id, ticker, "获取内部人交易")
         insider_trades = get_insider_trades(ticker, end_date, limit=50, api_key=api_key)
 
-        progress.update_status(agent_id, ticker, "Fetching company news")
+        progress.update_status(agent_id, ticker, "获取公司新闻")
         company_news = get_company_news(ticker, end_date, limit=50, api_key=api_key)
 
-        # Perform sub-analyses:
-        progress.update_status(agent_id, ticker, "Analyzing growth")
+        # 执行子分析：
+        progress.update_status(agent_id, ticker, "分析增长")
         growth_analysis = analyze_lynch_growth(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing fundamentals")
+        progress.update_status(agent_id, ticker, "分析基本面")
         fundamentals_analysis = analyze_lynch_fundamentals(financial_line_items)
 
-        progress.update_status(agent_id, ticker, "Analyzing valuation (focus on PEG)")
+        progress.update_status(agent_id, ticker, "分析估值(重点关注PEG)")
         valuation_analysis = analyze_lynch_valuation(financial_line_items, market_cap)
 
-        progress.update_status(agent_id, ticker, "Analyzing sentiment")
+        progress.update_status(agent_id, ticker, "分析情绪")
         sentiment_analysis = analyze_sentiment(company_news)
 
-        progress.update_status(agent_id, ticker, "Analyzing insider activity")
+        progress.update_status(agent_id, ticker, "分析内部人活动")
         insider_activity = analyze_insider_activity(insider_trades)
 
         # Combine partial scores with weights typical for Peter Lynch:
@@ -128,7 +128,7 @@ def peter_lynch_agent(state: AgentState, agent_id: str = "peter_lynch_agent"):
             "insider_activity": insider_activity,
         }
 
-        progress.update_status(agent_id, ticker, "Generating Peter Lynch analysis")
+        progress.update_status(agent_id, ticker, "生成Peter Lynch分析")
         lynch_output = generate_lynch_output(
             ticker=ticker,
             analysis_data=analysis_data[ticker],
@@ -142,18 +142,18 @@ def peter_lynch_agent(state: AgentState, agent_id: str = "peter_lynch_agent"):
             "reasoning": lynch_output.reasoning,
         }
 
-        progress.update_status(agent_id, ticker, "Done", analysis=lynch_output.reasoning)
+        progress.update_status(agent_id, ticker, "完成", analysis=lynch_output.reasoning)
 
-    # Wrap up results
+    # 包装结果
     message = HumanMessage(content=json.dumps(lynch_analysis), name=agent_id)
 
     if state["metadata"].get("show_reasoning"):
         show_agent_reasoning(lynch_analysis, "Peter Lynch Agent")
 
-    # Save signals to state
+    # 将信号保存到状态
     state["data"]["analyst_signals"][agent_id] = lynch_analysis
 
-    progress.update_status(agent_id, None, "Done")
+    progress.update_status(agent_id, None, "完成")
 
     return {"messages": [message], "data": state["data"]}
 
