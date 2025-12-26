@@ -1,0 +1,87 @@
+2025-12-26 17:18:17,879 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:18:17,916 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.6.5', 'start_time': '2025-12-26 17:18:17', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:18:31,419 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:18:31,455 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.6.5', 'start_time': '2025-12-26 17:18:31', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:18:32,496 - __main__ - INFO - 解析测试输出
+2025-12-26 17:18:32,497 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:22:26,292 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:22:26,301 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:22:26', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:22:27,469 - __main__ - INFO - 解析测试输出
+2025-12-26 17:22:27,469 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:22:27,469 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:22:27,469 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:22:27,469 - __main__ - INFO - 测试摘要: {'status': '失败', 'total_tests': 16, 'passed_tests': 0, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:01.176113', 'start_time': '2025-12-26 17:22:26', 'end_time': '2025-12-26 17:22:27'}
+2025-12-26 17:22:27,469 - __main__ - INFO - 测试完成，返回码: 1
+2025-12-26 17:22:27,469 - __main__ - INFO - 测试摘要: {'status': '失败', 'total_tests': 16, 'passed_tests': 0, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:01.176113', 'start_time': '2025-12-26 17:22:26', 'end_time': '2025-12-26 17:22:27'}
+2025-12-26 17:27:49,966 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:27:49,973 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:27:49', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:27:50,787 - __main__ - INFO - 解析测试输出
+2025-12-26 17:27:50,787 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:27:50,788 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:27:50,788 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:27:50,788 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 0, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.821207', 'start_time': '2025-12-26 17:27:49', 'end_time': '2025-12-26 17:27:50'}
+2025-12-26 17:27:50,788 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:27:50,788 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 0, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.821207', 'start_time': '2025-12-26 17:27:49', 'end_time': '2025-12-26 17:27:50'}
+2025-12-26 17:33:00,258 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:33:00,266 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:33:00', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:33:01,188 - __main__ - INFO - 解析测试输出
+2025-12-26 17:33:01,188 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:33:01,189 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:33:01,190 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:33:01,190 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.929453', 'start_time': '2025-12-26 17:33:00', 'end_time': '2025-12-26 17:33:01'}
+2025-12-26 17:33:01,190 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:33:01,190 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.929453', 'start_time': '2025-12-26 17:33:00', 'end_time': '2025-12-26 17:33:01'}
+2025-12-26 17:42:30,031 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:42:30,039 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:42:30', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:42:30,991 - __main__ - INFO - 解析测试输出
+2025-12-26 17:42:30,991 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:42:30,992 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:42:30,993 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:42:30,993 - __main__ - INFO - 测试摘要: {'status': '失败', 'total_tests': 16, 'passed_tests': 15, 'failed_tests': 1, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.959414', 'start_time': '2025-12-26 17:42:30', 'end_time': '2025-12-26 17:42:30'}
+2025-12-26 17:42:30,993 - __main__ - INFO - 测试完成，返回码: 1
+2025-12-26 17:42:30,993 - __main__ - INFO - 测试摘要: {'status': '失败', 'total_tests': 16, 'passed_tests': 15, 'failed_tests': 1, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.959414', 'start_time': '2025-12-26 17:42:30', 'end_time': '2025-12-26 17:42:30'}
+2025-12-26 17:43:03,695 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:43:03,703 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:43:03', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:43:04,649 - __main__ - INFO - 解析测试输出
+2025-12-26 17:43:04,649 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:43:04,649 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:43:04,649 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:43:04,649 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.953175', 'start_time': '2025-12-26 17:43:03', 'end_time': '2025-12-26 17:43:04'}
+2025-12-26 17:43:04,649 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:43:04,650 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.953175', 'start_time': '2025-12-26 17:43:03', 'end_time': '2025-12-26 17:43:04'}
+2025-12-26 17:43:25,491 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:43:25,499 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:43:25', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:43:26,409 - __main__ - INFO - 解析测试输出
+2025-12-26 17:43:26,410 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:43:26,410 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:43:26,410 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:43:26,410 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.918313', 'start_time': '2025-12-26 17:43:25', 'end_time': '2025-12-26 17:43:26'}
+2025-12-26 17:43:26,410 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:43:26,410 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.918313', 'start_time': '2025-12-26 17:43:25', 'end_time': '2025-12-26 17:43:26'}
+2025-12-26 17:43:45,571 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:43:45,579 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:43:45', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:43:46,512 - __main__ - INFO - 解析测试输出
+2025-12-26 17:43:46,512 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:43:46,513 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:43:46,513 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:43:46,513 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.940920', 'start_time': '2025-12-26 17:43:45', 'end_time': '2025-12-26 17:43:46'}
+2025-12-26 17:43:46,513 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:43:46,513 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.940920', 'start_time': '2025-12-26 17:43:45', 'end_time': '2025-12-26 17:43:46'}
+2025-12-26 17:45:39,288 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:45:39,295 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:45:39', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:45:40,212 - __main__ - INFO - 解析测试输出
+2025-12-26 17:45:40,213 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:45:40,213 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:45:40,213 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:45:40,213 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.924344', 'start_time': '2025-12-26 17:45:39', 'end_time': '2025-12-26 17:45:40'}
+2025-12-26 17:45:40,213 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:45:40,213 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 16, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.924344', 'start_time': '2025-12-26 17:45:39', 'end_time': '2025-12-26 17:45:40'}
+2025-12-26 17:46:26,258 - __main__ - INFO - 初始化测试记录器
+2025-12-26 17:46:26,266 - __main__ - INFO - 开始测试，环境: {'python_version': 'Python 3.13.1', 'start_time': '2025-12-26 17:46:26', 'cwd': '/Users/kevin_1/ai-hedge-fund', 'platform': 'darwin'}
+2025-12-26 17:46:27,138 - __main__ - INFO - 解析测试输出
+2025-12-26 17:46:27,139 - __main__ - INFO - 生成测试记录文档
+2025-12-26 17:46:27,139 - __main__ - INFO - 测试记录文档已生成: docs/测试过程记录.md
+2025-12-26 17:46:27,139 - __main__ - INFO - 测试结果JSON已生成: docs/测试结果.json
+2025-12-26 17:46:27,139 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 14, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.880429', 'start_time': '2025-12-26 17:46:26', 'end_time': '2025-12-26 17:46:27'}
+2025-12-26 17:46:27,139 - __main__ - INFO - 测试完成，返回码: 0
+2025-12-26 17:46:27,139 - __main__ - INFO - 测试摘要: {'status': '通过', 'total_tests': 16, 'passed_tests': 14, 'failed_tests': 0, 'error_tests': 0, 'skipped_tests': 0, 'duration': '0:00:00.880429', 'start_time': '2025-12-26 17:46:26', 'end_time': '2025-12-26 17:46:27'}

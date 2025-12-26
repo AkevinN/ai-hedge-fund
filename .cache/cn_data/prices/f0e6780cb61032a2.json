@@ -1,0 +1,35 @@
+{
+  "cached_at": "2025-12-26T17:27:38.312697",
+  "data": [
+    {
+      "symbol": "000001",
+      "name": "平安银行",
+      "date": "2024-01-15",
+      "open": 10.5,
+      "close": 10.8,
+      "high": 11.0,
+      "low": 10.3,
+      "volume": 1000000.0,
+      "amount": 10800000.0,
+      "amplitude": 6.8,
+      "change_pct": 2.86,
+      "change_amount": 0.3,
+      "turnover_rate": 0.5
+    },
+    {
+      "symbol": "000001",
+      "name": "平安银行",
+      "date": "2024-01-16",
+      "open": 10.8,
+      "close": 11.0,
+      "high": 11.2,
+      "low": 10.7,
+      "volume": 1200000.0,
+      "amount": 13200000.0,
+      "amplitude": 4.6,
+      "change_pct": 1.85,
+      "change_amount": 0.2,
+      "turnover_rate": 0.6
+    }
+  ]
+}
